@@ -1,13 +1,13 @@
 import React from "react";
 // Import all landing components
-import Navbar from "../components/Landing/Navbar";
-import Hero from "../components/Landing/Hero";
-import Features from "../components/Landing/Features";
-import Pricing from "../components/Landing/Pricing";
-import Testimonials from "../components/Landing/Testimonials";
-import FAQ from "../components/Landing/FAQ";
-import Contact from "../components/Landing/Contact";
-import Footer from "../components/Landing/Footer";
+import Navbar from "../Components/Landing/Navbar";
+import Hero from "../Components/Landing/Hero";
+import Features from "../Components/Landing/Features";
+import Pricing from "../Components/Landing/Pricing";
+import Testimonials from "../Components/Landing/Testimonials";
+import FAQ from "../Components/Landing/FAQ";
+import Contact from "../Components/Landing/Contact";
+import Footer from "../Components/Landing/Footer";
 
 const LandingPage = () => {
   return (
