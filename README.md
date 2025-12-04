@@ -221,23 +221,23 @@ Frontend runs at: http://localhost:5173
 
 Endpoints Summary
 
-Method	     Endpoint	             Auth	  Admin	  Description
+Method-------Endpoint--------------Auth----Admin----Description
 
-POST	       /register	           ❌	     ❌	    Register user
+POST---------/register--------------❌-----❌------Register user
 
-POST	       /login	               ❌	     ❌   	Login user
+POST---------/login-----------------❌-----❌------Login user
 
-GET	         /get-profile	         ✔	     ❌	    Logged-in profile
+GET----------/get-profile-----------✔------❌------Logged-in profile
 
-POST	       /logout	             ✔	     ❌	    Logout
+POST---------/logout----------------✔------❌------Logout
 
-PATCH	      /update-profile	       ✔	     ❌	    Update name/email
+PATCH--------/update-profile--------✔	-----❌-------Update name/email
 
-PATCH	      /update-password	     ✔	     ❌	    Update password
+PATCH--------/update-password-------✔------❌------Update password
 
-GET	        /get-all-users	       ✔	     ✔	    Admin: get all users
+GET----------/get-all-users---------✔------✔-------Admin: get all users
 
-DELETE	    /delete-user/:id	     ✔	     ✔	Admin: delete user
+DELETE-------/delete-user/:id-------✔------✔-------Admin: delete user
 
 👉 Full API Reference already generated above.
 
