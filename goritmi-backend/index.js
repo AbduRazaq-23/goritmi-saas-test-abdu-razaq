@@ -7,13 +7,15 @@ import cookieParser from "cookie-parser";
 
 app.use(
   cors({
-    origin:
-      "http://localhost:5173" ||
-      "https://goritmi-saas-test-abdu-razaq-v21c.vercel.app/", //  frontend
+    origin: [
+      "http://localhost:5173",
+      "https://goritmi-saas-test-abdu-razaq-v21c.vercel.app",
+    ], //  frontend
     credentials: true,
   })
 );
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // import route
