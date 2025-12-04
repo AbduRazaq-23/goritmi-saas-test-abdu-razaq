@@ -41,7 +41,7 @@ const AnalyticsCards = () => {
     });
   }, []);
 
-  const stat = [
+  const stats = [
     {
       name: "Total User",
       val: 1200,
@@ -62,12 +62,16 @@ const AnalyticsCards = () => {
   return (
     <div className="space-y-6">
       {/* Stats row */}
-      <motion.div className="grid lg:grid-cols-3 gap-6">
-        {stat.map((s) => {
+      <div className="grid lg:grid-cols-3 gap-6">
+        {stats.map((s) => {
           return (
             <motion.div
               key={s.name}
               className="bg-white p-6 rounded-2xl shadow"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+              viewport={{ once: true }}
             >
               <h4 className="text-sm text-gray-500">{s.name}</h4>
               <div className="mt-3 text-2xl font-bold">{s.val}</div>
@@ -81,7 +85,7 @@ const AnalyticsCards = () => {
             </motion.div>
           );
         })}
-      </motion.div>
+      </div>
 
       {/* Charts Row */}
       <div className="grid lg:grid-cols-2 gap-6 ">
