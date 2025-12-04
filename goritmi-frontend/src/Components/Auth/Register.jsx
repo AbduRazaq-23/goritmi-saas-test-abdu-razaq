@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useAuth } from "../../context/AuthContext";
 
 const Register = () => {
+  const nav = useNavigate();
+  const { register } = useAuth();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -15,8 +18,12 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(form);
-    // TODO: integrate Register API here
+    try {
+      register(form);
+      nav("/login");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

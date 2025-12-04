@@ -1,21 +1,27 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
+  const nav = useNavigate();
+  const { login } = useAuth();
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
-
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(form);
-    // TODO: integrate login API here
+    try {
+      await login(form);
+      nav("/dashboard");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
