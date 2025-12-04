@@ -145,15 +145,21 @@ dotenv
 ======================================
 
 📦 Installation & Setup
+
 1️⃣ Clone the Repository
+
 git clone https://github.com/AbduRazaq-23/goritmi-saas-test-abdu-razaq.git
+
 cd goritmi-saas-test-abdu-razaq
 
 =====================================
 
 2️⃣ Backend Setup
+
 Install dependencies:
+
 cd goritmi-backend
+
 npm install
 
 
@@ -161,9 +167,13 @@ npm install
 
 
 PORT=5000
+
 MONGOOSE_URI=your_mongo_connection_string
+
 JWT_SECRET=yourJWTsecret
+
 JWT_EXPIRE=7d
+
 CLIENT_URL=http://localhost:5173
 
 
@@ -178,6 +188,76 @@ Your backend runs at: http://localhost:5000
 
 
 ====================================
+====================================
+
+3️⃣ Frontend Setup
+
+Install dependencies:
+
+cd goritmi-frontend
+
+npm install
+
+Start frontend:
+
+npm run dev
+
+Frontend runs at: http://localhost:5173
+
+
+==========================================
+==========================================
+
+
+📁 Project Folder Structure
+
+
+==========================================
+==========================================
+
+🔐 Authentication API Documentation
+
+▶ Base URL http://localhost:5000/api/auth
+
+Endpoints Summary
+
+Method	     Endpoint	             Auth	  Admin	  Description
+
+POST	       /register	           ❌	     ❌	    Register user
+
+POST	       /login	               ❌	     ❌   	Login user
+
+GET	         /get-profile	         ✔	     ❌	    Logged-in profile
+
+POST	       /logout	             ✔	     ❌	    Logout
+
+PATCH	      /update-profile	       ✔	     ❌	    Update name/email
+
+PATCH	      /update-password	     ✔	     ❌	    Update password
+
+GET	        /get-all-users	       ✔	     ✔	    Admin: get all users
+
+DELETE	    /delete-user/:id	     ✔	     ✔	Admin: delete user
+
+👉 Full API Reference already generated above.
+
+
+==========================================================================
+
+==========================================================================
+
+🪟 Screenshots
+
+Add your app screenshots inside /screenshots folder.
+
+=========================================================================
+
+=========================================================================
+
+🚀 Deployment Guide
+
+Frontend Deployment: Vercel
+
 
 
 
