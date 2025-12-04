@@ -69,8 +69,10 @@ const login = async (req, res) => {
     }
     // options for cookies
     const options = {
-      httpsOnly: true,
-      secure: true,
+      httpOnly: true,
+      secure: process.env.NODE_ENV,
+      sameSite: process.env.NODE_ENV ? "none" : "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     };
 
     // generate token
