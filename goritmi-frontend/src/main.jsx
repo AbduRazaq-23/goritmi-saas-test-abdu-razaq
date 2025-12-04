@@ -5,6 +5,8 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { AuthProvider } from "./context/AuthContext";
+import axios from "../src/axiosConfig";
 
 function ScrollToHashElement() {
   const { hash } = useLocation();
@@ -28,7 +30,9 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <ScrollToHashElement />
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>
 );
