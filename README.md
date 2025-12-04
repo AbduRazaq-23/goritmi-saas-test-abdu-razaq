@@ -1,119 +1,56 @@
-🚀 Features Included in Navbar
+🚀 Goritmi Dev – MERN SaaS Platform
 
-✔ Modern SAAS navbar
-✔ Sticky top
-✔ Mobile hamburger menu
-✔ Smooth open/close
-✔ Fully responsive (Tailwind)
-✔ Links to Auth pages (Login + Get Started)
-✔ Internal section links (#features, #contact, etc.)
+A modern full-stack MERN SaaS application featuring:
 
-//////////////////////////////////////////////////
-🚀 Hero Component Includes
+Fully animated Landing Page
 
-✨ Framer Motion animations:
-Text Fade Up: Smooth slide + fade
-Buttons Scale Animation: Slight zoom on hover/tap
-Floating Illustration: Subtle up-down infinite motion
-Section fade-in: Polished entrance
+JWT-based Authentication System
 
-🧩 Layout:
-Left: Heading + paragraph + buttons
-Right: Floating illustration
-Fully responsive on all screens
+Protected Dashboard with analytics & charts
 
-//////////////////////////////////////////////////
-🎨 Features Component Includes
+Role-based access control (Admin/User)
 
-✨ Animations
-Smooth fade-up effect
-Stagger reveal of feature cards
-Hover shadow animation
-100% responsive grid
+Modern UI with Tailwind CSS + Framer Motion + Recharts
 
-🧩 Icons Used
-From react-icons/fa:
-FaBolt
-FaLock
-FaChartLine
-FaCloud
+This project is built for production-grade learning and SaaS boilerplate development.
 
-//////////////////////////////////////////////////
-🎨 Pricing Included
-✨ Animations (Framer Motion)
-Grid appears with staggered fade-up
-Each card slides up smoothly
-Middle card scales up for highlighting
-Button interactive animations (hover + tap)
 
-🎯 Middle “Pro” Plan Highlight
-Larger scale
-Blue border
-Light blue background
-Shadow emphasis
+✨ Features
+🌐 Landing Page
 
-📱 Responsiveness
-Full support for mobile, tablet, desktop
-Beautiful 1 → 2 → 3 column layout
+Responsive Navbar
 
-//////////////////////////////////////////////////
-🎨 Testimonials Component Includes
-✨ Animations
-Smooth fading grid
-Staggered card animations
-Clean slide-up effect
-Subtle hover shadow animation
+Hero Section
 
-📱 Responsive Layout
-Single column on mobile
-Two/three columns on larger screens
+Features Section
 
-⭐ Modern Card UI
-Circular profile image
-Border highlight
-Italic testimonial text
-Name + role
+Pricing
 
-//////////////////////////////////////////////////
-🎨 FAQ Included
+Testimonials
 
-✨ Smooth Animations
-Accordion opens with:
-Fade-in
-Height animation
-Arrow rotates 180°
-Staggered section reveal
+FAQ Accordion
 
-🎛 Clean UX
-Only one FAQ open at a time
-Fully responsive
-Light shadows and rounded edges
+Contact Form
 
-🧩 Uses:
-Framer Motion (AnimatePresence + variants)
-react-icons (Chevron icon)
-Tailwind CSS for layout
+Footer
 
-//////////////////////////////////////////////////
-🎨 Contact Component Includes
+Smooth animations using Framer Motion
 
-✨ Animations (Framer Motion)
-Section fades + slides in
-Form container pops in smoothly
-Button hover animations
 
-📱 Fully Responsive
-Clean layout on mobile
-Wide and centered on desktop
-🎛 Modern UI
-Rounded form inputs
-Shadows + spacing
-Soft blue focus rings
+🔐 Authentication
 
-//////////////////////////////////////////////////
-Footer includes:
-✔ Logo
-✔ Quick Links
-✔ Social Icons
+Register & Login (JWT)
+
+Secure password hashing (bcrypt)
+
+Store token via cookie 
+
+Context API for global auth state
+
+Protected routes
+
+Logout
+
+
 ✔ Copyright
 ✔ Fully responsive layout
