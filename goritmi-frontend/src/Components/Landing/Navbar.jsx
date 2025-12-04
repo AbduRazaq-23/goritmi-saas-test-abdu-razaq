@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { HashLink } from "react-router-hash-link";
 import { HiMenu, HiX } from "react-icons/hi";
+import { useAuth } from "../../context/AuthContext";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user } = useAuth();
 
   return (
     <nav className="w-full bg-white shadow-md fixed top-0 left-0 z-50">
