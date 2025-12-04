@@ -33,7 +33,7 @@ const GetAllUser = () => {
       {user?.map((u) => {
         return (
           <div
-            key={u.name}
+            key={u._id}
             className="flex flex-col my-2 p-5 bg-white rounded-md shadow-md"
           >
             <div className="flex justify-between items-center">
