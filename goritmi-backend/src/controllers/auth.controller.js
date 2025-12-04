@@ -136,23 +136,60 @@ const logout = async (req, res) => {
 // ===============================
 // 📌 UPDATE USER
 // ===============================
-const update = async (req, res) => {
+const updateProfile = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email } = req.body;
 
-    if (!name || !email || !password) {
+    if (!name || !email) {
       return res.status(400).json({ message: "all field are required" });
     }
     if (!req.user) {
       return res.status(401).json({ message: "unauthorized request" });
     }
-    const hashedPassword = await bcrypt.hash(password, 10);
+
     const user = await User.findByIdAndUpdate(
       req.user._id,
       {
         $set: {
           name,
           email,
+        },
+      },
+      { new: true }
+    );
+    if (!user) {
+      return res.status(400).json({ message: "unauthorized request" });
+    }
+    return res.status(200).json({ message: "updated successfully" });
+  } catch (error) {
+    console.log("update error", error);
+    return res.status(500).json({ message: "server error" });
+  }
+};
+// ===============================
+// 📌 UPDATE PASSWORD
+// ===============================
+const updatePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ message: "all field are required" });
+    }
+    if (!req.user) {
+      return res.status(401).json({ message: "unauthorized request" });
+    }
+    const user = await User.findById(req.user._id).select("+password");
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "incorrect old password" });
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await User.findByIdAndUpdate(
+      user?._id,
+      {
+        $set: {
           password: hashedPassword,
         },
       },
@@ -205,4 +242,13 @@ const deleteUser = async (req, res) => {
   }
 };
 
-export { register, login, getProfile, logout, update, getAllUser, deleteUser };
+export {
+  register,
+  login,
+  getProfile,
+  logout,
+  updateProfile,
+  updatePassword,
+  getAllUser,
+  deleteUser,
+};
