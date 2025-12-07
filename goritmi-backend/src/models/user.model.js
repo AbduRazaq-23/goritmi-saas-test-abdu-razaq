@@ -31,6 +31,17 @@ const userSchema = new Schema(
       emum: ["user", "admin"],
       default: "user",
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    otp: {
+      type: Number,
+    },
   },
   { timestamps: true }
 );
