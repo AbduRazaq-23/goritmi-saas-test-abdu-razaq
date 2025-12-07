@@ -12,7 +12,7 @@ Role-based access control (Admin/User)
 
 Modern UI with Tailwind CSS + Framer Motion + Recharts
 
-This project is built for production-grade learning and SaaS boilerplate development.
+
 
 =====================================
 =====================================
@@ -91,6 +91,8 @@ JWT Authentication
 Mongoose User Model
 
 Auth Controller
+
+Email Verification using resend
 
 Protected Routes (verifyUser)
 
@@ -239,7 +241,7 @@ GET----------/get-all-users---------✔------✔-------Admin: get all users
 
 DELETE-------/delete-user/:id-------✔------✔-------Admin: delete user
 
-👉 Full API Reference already generated above.
+👉 Full API Reference above.
 
 
 ==========================================================================
@@ -248,7 +250,7 @@ DELETE-------/delete-user/:id-------✔------✔-------Admin: delete user
 
 🪟 Screenshots
 
-Add your app screenshots inside /screenshots folder.
+
 
 =========================================================================
 
