@@ -18,6 +18,8 @@
     "express": "^5.1.0",
     "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^9.0.0"
+    "mongoose": "^9.0.0",
+    "otp-generator": "^4.0.1",
+    "resend": "^6.5.2"
   }
 }

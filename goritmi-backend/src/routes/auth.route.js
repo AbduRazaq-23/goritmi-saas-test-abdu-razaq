@@ -6,7 +6,9 @@ const router = Router();
 import {
   register,
   login,
+  verifyEmail,
   getProfile,
+  deActivateUser,
   logout,
   updateProfile,
   updatePassword,
@@ -32,14 +34,16 @@ import {
 // ===============================
 router.route("/register").post(validateMiddleware(registerSchema), register);
 router.route("/login").post(validateMiddleware(logInSchema), login);
+router.route("/verfiy-email").post(verifyEmail);
+// verify user routes
 router.route("/get-profile").get(verifyUser, getProfile);
 router.route("/logout").post(verifyUser, logout);
-router
-  .route("/update-profile")
-  .patch(validateMiddleware(updateSchema), verifyUser, updateProfile);
+router.route("/update-profile").patch(verifyUser, updateProfile);
 router
   .route("/update-password")
   .patch(validateMiddleware(updateSchema), verifyUser, updatePassword);
+// adminOnly & verifyuser routes
+router.route("/deactivate/:id").post(verifyUser, adminOnly, deActivateUser);
 router.route("/get-all-users").get(verifyUser, adminOnly, getAllUser);
 router.route("/delete-user/:id").delete(verifyUser, adminOnly, deleteUser);
 

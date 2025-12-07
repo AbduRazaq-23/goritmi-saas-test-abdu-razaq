@@ -1,6 +1,8 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import generateToken from "../utills/generateToken.js";
+import sendVerificationEmail from "../utills/SendEmails.js";
+import otpGenerator from "otp-generator";
 
 // ===============================
 // 📌 REGISTER USER
@@ -20,12 +22,24 @@ const register = async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // generate otp
+    const otp = otpGenerator.generate(6, {
+      digits: true,
+      lowerCaseAlphabets: false,
+      upperCaseAlphabets: false,
+      specialChars: false,
+    });
+
     //create user
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
+      otp,
     });
+
+    // pass data to email verification
+    sendVerificationEmail(email, otp);
 
     // options for cookies
     const options = {
@@ -48,6 +62,30 @@ const register = async (req, res) => {
   }
 };
 // ===============================
+// 📌 VERIFY EMAIL
+// ===============================
+const verifyEmail = async (req, res) => {
+  try {
+    const { otp } = req.body;
+
+    if (!otp) {
+      return res.status(400).json({ message: "fill otp" });
+    }
+    const user = await User.findOne({ otp });
+
+    if (!user) {
+      return res.status(400).json({ message: "invalid otp or expire" });
+    }
+    user.isVerified = true;
+    user.otp = undefined;
+    await user.save();
+
+    return res.status(200).json({ message: "email verify successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "server error error" }, error);
+  }
+};
+// ===============================
 // 📌 LOGIN USER
 // ===============================
 const login = async (req, res) => {
@@ -59,8 +97,19 @@ const login = async (req, res) => {
     }
     // Find user
     const user = await User.findOne({ email }).select("+password");
+    // if not user
     if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res
+        .status(400)
+        .json({ message: "email not found register your self" });
+    }
+    // is email verified
+    if (user.isVerified !== true) {
+      return res.status(400).json({ message: "Verify email first" });
+    }
+    // is account active
+    if (user.isActive === false) {
+      return res.status(500).json({ message: "your accound is Deactivated" });
     }
     // Check password
     const match = await bcrypt.compare(password, user.password);
@@ -89,6 +138,30 @@ const login = async (req, res) => {
   } catch (error) {
     console.error("Login Error:", error);
     return res.status(500).json({ message: "Server error" });
+  }
+};
+// ===============================
+// 📌 GET LOGGED-IN USER PROFILE
+// ===============================
+const deActivateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: "user id not found" });
+    }
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(400).json({ message: "user not found" });
+    }
+    user.isActive = !user.isActive;
+    await user.save();
+    return res
+      .status(200)
+      .json({ message: user.isActive ? "User Activated" : "User Deactivated" });
+  } catch (error) {
+    return res.status(500).json({ message: "server error", error });
   }
 };
 // ===============================
@@ -246,7 +319,9 @@ const deleteUser = async (req, res) => {
 
 export {
   register,
+  verifyEmail,
   login,
+  deActivateUser,
   getProfile,
   logout,
   updateProfile,
