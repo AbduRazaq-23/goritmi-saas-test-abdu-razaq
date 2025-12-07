@@ -52,7 +52,7 @@ const register = async (req, res) => {
       .status(201)
       .cookie("token", token, options)
       .json({
-        message: "register succesfully",
+        message: "verify email",
         user: { id: user._id, name: user.name, email: user.email },
         token,
       });
