@@ -143,7 +143,7 @@ const login = async (req, res) => {
 // ===============================
 // 📌 GET LOGGED-IN USER PROFILE
 // ===============================
-const deActivateUser = async (req, res) => {
+const toggleStatusUser = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -157,9 +157,10 @@ const deActivateUser = async (req, res) => {
     }
     user.isActive = !user.isActive;
     await user.save();
-    return res
-      .status(200)
-      .json({ message: user.isActive ? "User Activated" : "User Deactivated" });
+    return res.status(200).json({
+      message: user.isActive ? "User Activated" : "User Deactivated",
+      user,
+    });
   } catch (error) {
     return res.status(500).json({ message: "server error", error });
   }
@@ -321,7 +322,7 @@ export {
   register,
   verifyEmail,
   login,
-  deActivateUser,
+  toggleStatusUser,
   getProfile,
   logout,
   updateProfile,

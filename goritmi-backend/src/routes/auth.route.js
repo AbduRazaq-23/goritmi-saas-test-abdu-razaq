@@ -8,7 +8,7 @@ import {
   login,
   verifyEmail,
   getProfile,
-  deActivateUser,
+  toggleStatusUser,
   logout,
   updateProfile,
   updatePassword,
@@ -28,6 +28,7 @@ import {
   registerSchema,
   logInSchema,
   updateSchema,
+  passwordUpdateSchema,
 } from "../utills/auth.validdator.js";
 // ===============================
 // 📌 ROUTES
@@ -38,12 +39,16 @@ router.route("/verfiy-email").post(verifyEmail);
 // verify user routes
 router.route("/get-profile").get(verifyUser, getProfile);
 router.route("/logout").post(verifyUser, logout);
-router.route("/update-profile").patch(verifyUser, updateProfile);
+router
+  .route("/update-profile")
+  .patch(validateMiddleware(updateSchema), verifyUser, updateProfile);
 router
   .route("/update-password")
-  .patch(validateMiddleware(updateSchema), verifyUser, updatePassword);
+  .patch(validateMiddleware(passwordUpdateSchema), verifyUser, updatePassword);
 // adminOnly & verifyuser routes
-router.route("/deactivate/:id").post(verifyUser, adminOnly, deActivateUser);
+router
+  .route("/toggle-status/:id")
+  .patch(verifyUser, adminOnly, toggleStatusUser);
 router.route("/get-all-users").get(verifyUser, adminOnly, getAllUser);
 router.route("/delete-user/:id").delete(verifyUser, adminOnly, deleteUser);
 
