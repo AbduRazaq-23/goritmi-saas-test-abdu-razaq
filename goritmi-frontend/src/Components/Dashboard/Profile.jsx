@@ -39,7 +39,7 @@ const Profile = () => {
         "http://localhost:5000/api/auth/update-password",
         pass
       );
-      setPass();
+      setPass({ oldPassword: "", newPassword: "" });
       console.log("success", res);
     } catch (error) {
       console.log(error);
