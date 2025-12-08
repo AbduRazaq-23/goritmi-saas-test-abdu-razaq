@@ -21,9 +21,14 @@ const logInSchema = joi.object({
 const updateSchema = joi.object({
   name: joi.string().min(3).max(20).optional(),
   email: joi.string().email().optional(),
-  password: joi.string().min(8).optional(),
+});
+// 📌 UPDATE VALIDATOR SCHEMA
+// ===============================
+const passwordUpdateSchema = joi.object({
+  oldPassword: joi.string().min(8).required(),
+  newPassword: joi.string().min(8).required(),
 });
 // ===============================
 // 📌 BY NAME EXPORT
 // ===============================
-export { registerSchema, logInSchema, updateSchema };
+export { registerSchema, logInSchema, updateSchema, passwordUpdateSchema };
