@@ -7,6 +7,8 @@ import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { AuthProvider } from "./context/AuthContext";
 import axios from "../src/axiosConfig";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function ScrollToHashElement() {
   const { hash } = useLocation();
@@ -32,6 +34,7 @@ createRoot(document.getElementById("root")).render(
       <ScrollToHashElement />
       <AuthProvider>
         <App />
+        <ToastContainer />
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>
