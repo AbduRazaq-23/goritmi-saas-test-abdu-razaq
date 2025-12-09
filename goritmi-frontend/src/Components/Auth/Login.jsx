@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const nav = useNavigate();
@@ -17,10 +18,11 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login(form);
+      const res = await login(form);
+      toast.success(res.message, { position: "top-right", autoClose: 1000 });
       nav("/dashboard");
     } catch (error) {
-      console.log(error);
+      toast.error(error.message, { position: "top-right", autoClose: 1000 });
     }
   };
 

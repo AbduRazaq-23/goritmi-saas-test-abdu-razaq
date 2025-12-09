@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
+import { toast } from "react-toastify";
 
 const Register = () => {
   const nav = useNavigate();
@@ -16,13 +17,14 @@ const Register = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      register(form);
-      nav("/login");
+      const res = await register(form);
+      toast.success(res.message, { position: "top-right", autoClose: 1000 });
+      nav("/otp-verify");
     } catch (error) {
-      console.log(error);
+      toast.error(error.message, { position: "top-right", autoClose: 1000 });
     }
   };
 
