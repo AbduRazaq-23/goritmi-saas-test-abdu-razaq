@@ -6,6 +6,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState();
 
   const register = async (form) => {
     try {
@@ -13,10 +14,21 @@ export const AuthProvider = ({ children }) => {
         "http://localhost:5000/api/auth/register",
         form
       );
-      setUser(res.data.user);
-      return { success: true };
+      return res.data;
     } catch (error) {
-      return error.res?.data?.message;
+      throw new Error(error.response?.data?.message || "Register failed");
+    }
+  };
+  const verifyOtp = async (otp) => {
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/verfiy-email",
+        { otp: otp }
+      );
+      return res.data;
+    } catch (error) {
+      setErr(error.response?.data?.message);
+      throw new Error(error.response?.data?.message || "veerification failed");
     }
   };
 
@@ -39,14 +51,19 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (form) => {
-    const res = await axios.post("http://localhost:5000/api/auth/login", form, {
-      withCredentials: true,
-    });
-
-    getProfile();
-
-    setUser(res.data);
-    return res.data;
+    try {
+      const { data } = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        form,
+        {
+          withCredentials: true,
+        }
+      );
+      getProfile();
+      return data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Login failed");
+    }
   };
 
   const logout = async () => {
@@ -61,7 +78,9 @@ export const AuthProvider = ({ children }) => {
       value={{
         user,
         loading,
+        err,
         register,
+        verifyOtp,
         login,
         logout,
         getProfile,
