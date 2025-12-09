@@ -1,4 +1,3 @@
-import { FaSearch } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 
 const TopBar = () => {
