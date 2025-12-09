@@ -9,7 +9,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://goritmi-saas-test-abdu-razaq-v21c.vercel.app",
+      "https://goritmi-saas-test-abdu-razaq.vercel.app",
     ], //  frontend
     credentials: true,
   })
