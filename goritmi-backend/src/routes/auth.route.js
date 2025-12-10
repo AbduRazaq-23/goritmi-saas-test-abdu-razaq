@@ -14,6 +14,9 @@ import {
   updatePassword,
   getAllUser,
   deleteUser,
+  sendOTP,
+  verifyOTP,
+  changePassword,
 } from "../controllers/auth.controller.js";
 // ===============================
 // 📌 IMPORT MIDDLEWARE
@@ -36,7 +39,9 @@ import {
 router.route("/register").post(validateMiddleware(registerSchema), register);
 router.route("/login").post(validateMiddleware(logInSchema), login);
 router.route("/verfiy-email").post(verifyEmail);
+//==============================================
 // verify user routes
+//==============================================
 router.route("/get-profile").get(verifyUser, getProfile);
 router.route("/logout").post(verifyUser, logout);
 router
@@ -45,11 +50,20 @@ router
 router
   .route("/update-password")
   .patch(validateMiddleware(passwordUpdateSchema), verifyUser, updatePassword);
+//================================================
 // adminOnly & verifyuser routes
+//================================================
 router
   .route("/toggle-status/:id")
   .patch(verifyUser, adminOnly, toggleStatusUser);
 router.route("/get-all-users").get(verifyUser, adminOnly, getAllUser);
 router.route("/delete-user/:id").delete(verifyUser, adminOnly, deleteUser);
+
+// ==================================================
+// FORGOT PASSWORD
+// ==================================================
+router.route("/forgot-password").post(sendOTP);
+router.route("/verify-otp").post(verifyOTP);
+router.route("/change-password").post(changePassword);
 
 export default router;

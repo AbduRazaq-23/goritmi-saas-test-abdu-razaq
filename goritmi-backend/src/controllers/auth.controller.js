@@ -273,10 +273,92 @@ const updatePassword = async (req, res) => {
     }
     return res.status(200).json({ message: "updated successfully" });
   } catch (error) {
-    console.log("update error", error);
     return res.status(500).json({ message: "server error" });
   }
 };
+// ===============================
+// 📌 FORGOT PASSWORD
+// ===============================
+// ===============================
+// 📌 SEND OTP
+// ===============================
+const sendOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+    // find email on db
+    const user = await User.findOne({ email });
+    // check email is available
+    if (!user) {
+      return res.status(404).json("email not found");
+    }
+    // generate otp
+    const otp = otpGenerator.generate(6, {
+      digits: true,
+      lowerCaseAlphabets: false,
+      upperCaseAlphabets: false,
+      specialChars: false,
+    });
+    user.otp = otp;
+    await user.save({ validateBeforeSave: false });
+
+    // send otp to email
+    sendVerificationEmail(email, otp);
+
+    return res
+      .status(200)
+      .json({ message: "otp send successfully", id: user._id });
+  } catch (error) {
+    return res.status(500).json({ message: "server error" });
+  }
+};
+// ===============================
+// 📌 VERIFY OTP
+// ===============================
+const verifyOTP = async (req, res) => {
+  try {
+    const { id, otp } = req.body;
+    const user = await User.findOne(id);
+    if (!user) {
+      return res.status(404).json({ message: "user not found by id" });
+    }
+    if (user.otp !== otp) {
+      return res.status(404).json({ message: "invalid otp" });
+    }
+    user.otp = undefined;
+    user.verifiedOtp = true;
+    await user.save({ validateBeforeSave: false });
+    return res.status(200).json({ message: "otp verified successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "server error", error });
+  }
+};
+// ===============================
+// 📌 CHANGE PASSWORD
+// ===============================
+const changePassword = async (req, res) => {
+  try {
+    const { id, password } = req.body;
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "invalid id" });
+    }
+    if (!user.verifiedOtp) {
+      return res.status(401).json({ message: "otp not verified" });
+    }
+
+    user.verifiedOtp = undefined;
+    user.password = hashedPassword;
+    await user.save();
+    return res.status(200).json({ message: "password updated successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "server error", error });
+  }
+};
+// ===============================
+// 📌 FORGOT PASSWORD END
+// ===============================
 // ===============================
 // 📌 UPDATE USER
 // ===============================
@@ -324,6 +406,9 @@ export {
   logout,
   updateProfile,
   updatePassword,
+  sendOTP, //send otp forgot password
+  verifyOTP, //verify otp forgot password
+  changePassword, //change password forgot password
   getAllUser,
   deleteUser,
 };
