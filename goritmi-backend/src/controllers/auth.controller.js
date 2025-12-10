@@ -127,14 +127,11 @@ const login = async (req, res) => {
     // generate token
     const token = generateToken(user._id);
 
-    return res
-      .status(201)
-      .cookie("token", token, options)
-      .json({
-        message: "login successful",
-        user: { id: user._id, name: user.name, email: user.email },
-        token,
-      });
+    return res.status(201).cookie("token", token, options).json({
+      message: "login successful",
+      user,
+      token,
+    });
   } catch (error) {
     console.error("Login Error:", error);
     return res.status(500).json({ message: "Server error" });
@@ -236,7 +233,7 @@ const updateProfile = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "unauthorized request" });
     }
-    return res.status(200).json({ message: "updated successfully" });
+    return res.status(200).json({ message: "updated successfully", user });
   } catch (error) {
     console.log("update error", error);
     return res.status(500).json({ message: "server error" });
