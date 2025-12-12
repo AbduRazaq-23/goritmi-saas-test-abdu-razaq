@@ -14,13 +14,22 @@ const Login = () => {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
+  // handle login
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await login(form);
       toast.success(res.message, { position: "top-right", autoClose: 1000 });
       nav("/dashboard");
+    } catch (error) {
+      toast.error(error.message, { position: "top-right", autoClose: 1000 });
+    }
+  };
+  // handle forgot password
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    try {
+      console.log("forgot password");
     } catch (error) {
       toast.error(error.message, { position: "top-right", autoClose: 1000 });
     }
@@ -67,6 +76,13 @@ const Login = () => {
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
             />
+            {/* Forgot password */}
+            <p
+              onClick={handleForgotPassword}
+              className="text-sm font-medium text-gray-700 text-right hover:text-blue-600 cursor-pointer"
+            >
+              Forgot password
+            </p>
           </div>
 
           {/* Login button */}

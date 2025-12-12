@@ -5,7 +5,9 @@ import Login from "./Components/Auth/Login";
 import Register from "./Components/Auth/Register";
 import Dashboard from "./Pages/Dashboard";
 import ProtectedRoute from "./Routes/ProtectedRoutes";
-import OTPVerify from "./Components/Auth/OTPVerify";
+
+import SignupOtpPage from "./Components/Auth/SignupOtpPage";
+import ForgotOtpPage from "./Components/Auth/ForgotOtpPage";
 
 function App() {
   return (
@@ -14,7 +16,8 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/otp-verify" element={<OTPVerify />} />
+        <Route path="/verify-email" element={<SignupOtpPage />} />
+        <Route path="/forgot-password/verify" element={<ForgotOtpPage />} />
         <Route
           path="/dashboard/*"
           element={
