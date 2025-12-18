@@ -22,7 +22,7 @@ const Profile = () => {
     e.preventDefault();
     try {
       const res = await axios.patch(
-        "http://localhost:5000/api/auth/update-profile",
+        "http://localhost:5000/api/user/update-profile",
         form
       );
       // update state on update

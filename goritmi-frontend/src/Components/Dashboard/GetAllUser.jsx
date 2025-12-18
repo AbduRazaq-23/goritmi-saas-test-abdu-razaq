@@ -9,7 +9,7 @@ const GetAllUser = () => {
   useEffect(() => {
     const getAllUser = async () => {
       const res = await axios.get(
-        "http://localhost:5000/api/auth/get-all-users",
+        "http://localhost:5000/api/user/get-all-users",
         {
           withCredentials: true,
         }
@@ -22,7 +22,7 @@ const GetAllUser = () => {
   // delete user
   const handleDelete = async (id) => {
     try {
-      await axios.delete("http://localhost:5000/api/auth/delete-user/" + id);
+      await axios.delete("http://localhost:5000/api/user/delete-user/" + id);
 
       setUser((pre) => pre.filter((u) => u._id !== id));
     } catch (error) {
@@ -33,7 +33,7 @@ const GetAllUser = () => {
   const toggleStatus = async (id) => {
     try {
       const res = await axios.patch(
-        "http://localhost:5000/api/auth/toggle-status/" + id
+        "http://localhost:5000/api/user/toggle-status/" + id
       );
       // to update ui button
       setUser((pre) =>
