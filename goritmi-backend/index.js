@@ -20,9 +20,11 @@ app.use(cookieParser());
 
 // import route
 import authRoute from "./src/routes/auth.route.js";
+import userRoute from "./src/routes/user.route.js";
 
 // use that route
 app.use("/api/auth", authRoute);
+app.use("/api/user", userRoute);
 
 connectDB()
   .then(() => {
