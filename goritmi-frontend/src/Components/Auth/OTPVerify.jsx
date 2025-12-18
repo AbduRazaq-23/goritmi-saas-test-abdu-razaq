@@ -1,11 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-const OTPVerify = () => {
-  const nav = useNavigate();
-  const { verifyOtp, err } = useAuth();
+const OTPVerify = ({ onSubmit }) => {
+  const { err, resendOtp } = useAuth();
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef([]);
 
@@ -35,28 +34,27 @@ const OTPVerify = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    try {
-      if (e) e.preventDefault();
-      const finalOtp = otp.join("");
-      console.log("OTP Submitted:", finalOtp);
-      // Call API
-      await verifyOtp(finalOtp);
-      //   Navigate to login after verify
-      nav("/login");
-    } catch (error) {
-      setOtp(["", "", "", "", "", ""]); // clear on failure
-      inputRefs.current[0]?.focus();
-    }
-  };
-
   // Auto-submit when all 6 digits are filled
   useEffect(() => {
-    const isComplete = otp.every((digit) => digit !== "" && /^\d$/.test(digit));
-    if (isComplete) {
-      handleSubmit(); // auto submit
-    }
+    (async () => {
+      try {
+        const isComplete = otp.every(
+          (digit) => digit !== "" && /^\d$/.test(digit)
+        );
+        if (isComplete) {
+          await onSubmit(otp); // auto submit
+        }
+      } catch (error) {
+        console.log(error);
+        setOtp(["", "", "", "", "", ""]); // clear on failure
+        inputRefs.current[0]?.focus();
+      }
+    })();
   }, [otp]); // runs every time otp changes
+
+  const resendOtpSubmit = async () => {
+    await resendOtp();
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
@@ -73,7 +71,7 @@ const OTPVerify = () => {
           Enter the 6-digit code sent to your email.
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={onSubmit} className="space-y-6">
           {/* OTP Boxes */}
           <div className="flex justify-between gap-2">
             {otp.map((digit, index) => (
@@ -98,7 +96,10 @@ const OTPVerify = () => {
         {/* Resend OTP */}
         <div className="text-center text-gray-600 mt-6 text-sm">
           Didn’t receive the code?{" "}
-          <button className="text-blue-600 underline hover:text-blue-700">
+          <button
+            onClick={resendOtpSubmit}
+            className="text-blue-600 underline hover:text-blue-700"
+          >
             Resend OTP
           </button>
         </div>

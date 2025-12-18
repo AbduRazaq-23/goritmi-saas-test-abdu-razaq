@@ -22,7 +22,7 @@ const Register = () => {
     try {
       const res = await register(form);
       toast.success(res.message, { position: "top-right", autoClose: 1000 });
-      nav("/otp-verify");
+      nav("/verify-email");
     } catch (error) {
       toast.error(error.message, { position: "top-right", autoClose: 1000 });
     }
