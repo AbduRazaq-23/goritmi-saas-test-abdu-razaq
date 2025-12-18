@@ -1,5 +1,6 @@
 import { Router } from "express";
 const router = Router();
+import resendOtpLimiter from "../middlewares/rateLimit.middleware.js";
 // ===============================
 // 📌 IMPORT CONTROLLERS
 // ===============================
@@ -7,22 +8,17 @@ import {
   register,
   login,
   verifyEmail,
-  getProfile,
-  toggleStatusUser,
   logout,
-  updateProfile,
   updatePassword,
-  getAllUser,
-  deleteUser,
   sendOTP,
   verifyOTP,
   changePassword,
+  resendEmailOtp,
 } from "../controllers/auth.controller.js";
 // ===============================
 // 📌 IMPORT MIDDLEWARE
 // ===============================
 import verifyUser from "../middlewares/auth.middleware.js";
-import adminOnly from "../middlewares/isAdmin.middleware.js";
 import validateMiddleware from "../middlewares/validate.middleware.js";
 // ===============================
 // 📌 IMPORT VALIDATOR SCHEMAS
@@ -30,7 +26,6 @@ import validateMiddleware from "../middlewares/validate.middleware.js";
 import {
   registerSchema,
   logInSchema,
-  updateSchema,
   passwordUpdateSchema,
 } from "../utills/auth.validdator.js";
 // ===============================
@@ -38,31 +33,20 @@ import {
 // ===============================
 router.route("/register").post(validateMiddleware(registerSchema), register);
 router.route("/login").post(validateMiddleware(logInSchema), login);
-router.route("/verfiy-email").post(verifyEmail);
+router.route("/otp/verify").post(verifyEmail);
+router.route("/otp/resend").post(resendOtpLimiter, resendEmailOtp);
 //==============================================
 // verify user routes
 //==============================================
-router.route("/get-profile").get(verifyUser, getProfile);
 router.route("/logout").post(verifyUser, logout);
-router
-  .route("/update-profile")
-  .patch(validateMiddleware(updateSchema), verifyUser, updateProfile);
 router
   .route("/update-password")
   .patch(validateMiddleware(passwordUpdateSchema), verifyUser, updatePassword);
-//================================================
-// adminOnly & verifyuser routes
-//================================================
-router
-  .route("/toggle-status/:id")
-  .patch(verifyUser, adminOnly, toggleStatusUser);
-router.route("/get-all-users").get(verifyUser, adminOnly, getAllUser);
-router.route("/delete-user/:id").delete(verifyUser, adminOnly, deleteUser);
 
 // ==================================================
 // FORGOT PASSWORD
 // ==================================================
-router.route("/forgot-password").post(sendOTP);
+router.route("/forgot-password").post(resendOtpLimiter, sendOTP);
 router.route("/verify-otp").post(verifyOTP);
 router.route("/change-password").post(changePassword);
 
