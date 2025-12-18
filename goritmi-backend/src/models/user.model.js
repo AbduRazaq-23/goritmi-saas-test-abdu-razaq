@@ -4,25 +4,22 @@ const userSchema = new Schema(
   {
     name: {
       type: String,
-      required: [true, "Name is required"],
+      required: true,
       trim: true,
-      minlength: 3,
-      maxlength: 20,
+      minlength: 2,
+      maxlength: 50,
     },
     email: {
       type: String,
-      required: [true, "Email is required"],
+      required: true,
       unique: true,
-      trim: true,
       lowercase: true,
-      match: [
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-        "Please provide a valid email address",
-      ],
+      trim: true,
+      index: true,
     },
-    password: {
+    passwordHash: {
       type: String,
-      required: [true, "Password is required"],
+      required: true,
       minlength: 8,
       select: false,
     },
@@ -39,8 +36,24 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    otp: {
+    // 🔐 OTP-related fields (Email Verification / Login)
+    emailOtpHash: {
+      type: String,
+      default: null,
+    },
+
+    emailOtpExpiresAt: {
+      type: Date,
+      default: null,
+    },
+
+    emailOtpAttempts: {
       type: Number,
+      default: 0,
+    },
+    forgotVerifyOtp: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
