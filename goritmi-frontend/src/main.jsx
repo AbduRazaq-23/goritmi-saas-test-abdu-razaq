@@ -29,13 +29,11 @@ function ScrollToHashElement() {
 }
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <BrowserRouter>
-      <ScrollToHashElement />
-      <AuthProvider>
-        <App />
-        <ToastContainer />
-      </AuthProvider>
-    </BrowserRouter>
-  </StrictMode>
+  <BrowserRouter>
+    <ScrollToHashElement />
+    <AuthProvider>
+      <App />
+      <ToastContainer />
+    </AuthProvider>
+  </BrowserRouter>
 );
