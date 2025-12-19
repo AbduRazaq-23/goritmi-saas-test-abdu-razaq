@@ -18,7 +18,17 @@ export const AuthProvider = ({ children }) => {
         "http://localhost:5000/api/auth/register",
         form
       );
+
+      const expireIt = res?.data?.user?.expireIt;
+
+      if (expireIt) {
+        // Save expiry in localStorage
+        localStorage.setItem("expireIt", expireIt);
+      }
+
+      // Save user data in state/context
       setUser(res.data.user);
+
       return res.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || "Register failed");
@@ -37,9 +47,11 @@ export const AuthProvider = ({ children }) => {
           withCredentials: true,
         }
       );
+      localStorage.removeItem("expireIt");
       setUser(res.data.user);
       toast.success(res.data.message);
     } catch (error) {
+      toast.error(error.message);
       setErr(error.response?.data?.message);
       throw new Error(error.response?.data?.message || "verification failed");
     }
@@ -54,11 +66,20 @@ export const AuthProvider = ({ children }) => {
         "http://localhost:5000/api/auth/otp/resend",
         {}
       );
-      setUser(res.data.user);
+
+      const user = res.data.user;
+
+      // Update user state
+      setUser(user);
+
+      // Save new OTP expiry in localStorage
+      if (user?.expireIt) {
+        localStorage.setItem("expireIt", user.expireIt);
+      }
+
       toast.success(res.data.message);
     } catch (error) {
-      console.log(error.message);
-      toast.error(error.message);
+      toast.error(error.response?.data?.message || "Too many requests");
     }
   };
 
@@ -75,12 +96,22 @@ export const AuthProvider = ({ children }) => {
         "http://localhost:5000/api/auth/forgot-password",
         { email }
       );
+
+      const user = res.data.user;
+
+      // Save OTP expiry in localStorage
+      if (user?.expireIt) {
+        localStorage.setItem("expireIt", user.expireIt);
+      }
+
       toast.success(res.data.message);
     } catch (error) {
-      setErr(error.response?.data?.message);
-      throw new Error(error.response?.data?.message || "failed");
+      toast.error(error.response?.data?.message || error.message || "Failed");
+      setErr(error.response?.data?.message || "Failed");
+      throw new Error(error.response?.data?.message || "Failed");
     }
   };
+
   //========================
   // VERIFY OTP
   //========================
@@ -90,6 +121,7 @@ export const AuthProvider = ({ children }) => {
         "http://localhost:5000/api/auth/verify-otp",
         { otp }
       );
+      localStorage.removeItem("expireIt");
       toast.success(res.data.message);
     } catch (error) {
       setErr(error.response?.data?.message);
@@ -155,6 +187,17 @@ export const AuthProvider = ({ children }) => {
           withCredentials: true,
         }
       );
+
+      // IF EMAIL NOT VERIFIED
+      if (data.requiresOtp) {
+        const user = data.user;
+
+        // Save OTP expiry in localStorage
+        if (user?.expireIt) {
+          localStorage.setItem("expireIt", user.expireIt);
+        }
+      }
+
       setUser((prev) => ({ ...prev, ...data.user }));
       return data;
     } catch (error) {

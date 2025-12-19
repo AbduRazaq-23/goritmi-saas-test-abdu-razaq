@@ -1,32 +1,34 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
-import { toast } from "react-toastify";
+
+const OTP_LENGTH = 6;
 
 const OTPVerify = ({ onSubmit }) => {
   const { err, resendOtp } = useAuth();
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""));
   const inputRefs = useRef([]);
+  const [secondsLeft, setSecondsLeft] = useState(0);
 
+  /* ------------------ HANDLE OTP CHANGE ------------------ */
   const handleChange = (value, index) => {
-    if (!/^\d*$/.test(value)) return; // only allow numbers
+    if (!/^\d?$/.test(value)) return;
 
     const newOtp = [...otp];
-    newOtp[index] = value.slice(-1); // take only the last character (prevents pasting multiple)
+    newOtp[index] = value;
     setOtp(newOtp);
 
-    // Move to next input
-    if (value && index < 5) {
-      inputRefs.current[index + 1].focus();
+    if (value && index < OTP_LENGTH - 1) {
+      inputRefs.current[index + 1]?.focus();
     }
   };
 
+  /* ------------------ HANDLE BACKSPACE ------------------ */
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace") {
-      if (otp[index] === "" && index > 0) {
-        inputRefs.current[index - 1].focus();
-      } else if (otp[index] !== "") {
-        // Clear current box on backspace if it has value
+      if (!otp[index] && index > 0) {
+        inputRefs.current[index - 1]?.focus();
+      } else {
         const newOtp = [...otp];
         newOtp[index] = "";
         setOtp(newOtp);
@@ -34,68 +36,114 @@ const OTPVerify = ({ onSubmit }) => {
     }
   };
 
-  // Auto-submit when all 6 digits are filled
-  useEffect(() => {
-    (async () => {
-      try {
-        const isComplete = otp.every(
-          (digit) => digit !== "" && /^\d$/.test(digit)
-        );
-        if (isComplete) {
-          await onSubmit(otp); // auto submit
-        }
-      } catch (error) {
-        console.log(error);
-        setOtp(["", "", "", "", "", ""]); // clear on failure
-        inputRefs.current[0]?.focus();
-      }
-    })();
-  }, [otp]); // runs every time otp changes
+  /* ------------------ HANDLE PASTE ------------------ */
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, OTP_LENGTH);
 
-  const resendOtpSubmit = async () => {
-    await resendOtp();
+    if (!pasted) return;
+
+    const newOtp = [...otp];
+    pasted.split("").forEach((digit, i) => {
+      newOtp[i] = digit;
+    });
+
+    setOtp(newOtp);
+    inputRefs.current[Math.min(pasted.length - 1, OTP_LENGTH - 1)]?.focus();
   };
+
+  /* ------------------ AUTO SUBMIT ------------------ */
+  useEffect(() => {
+    const isComplete = otp.every((d) => /^\d$/.test(d));
+    if (isComplete) {
+      onSubmit(otp.join(""));
+    }
+  }, [otp]);
+
+  /* ------------------ TIMER ------------------ */
+  useEffect(() => {
+    // get expiry from localStorage or context
+    let expiryISO = localStorage.getItem("expireIt");
+    if (!expiryISO) return;
+
+    const expiryTime = new Date(expiryISO).getTime();
+
+    const interval = setInterval(() => {
+      const diff = Math.max(Math.floor((expiryTime - Date.now()) / 1000), 0);
+      setSecondsLeft(diff);
+
+      if (diff === 0) {
+        clearInterval(interval);
+        localStorage.removeItem("expireIt");
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  /* ------------------ RESEND OTP ------------------ */
+  const resendOtpSubmit = async () => {
+    setOtp(Array(OTP_LENGTH).fill(""));
+    inputRefs.current[0]?.focus();
+    const res = await resendOtp(); // backend returns new otpExpiresAt
+    const newExpiry = res.otpExpiresAt;
+    setOtpExpiresAt(newExpiry);
+    localStorage.setItem("otpExpiresAt", newExpiry);
+  };
+
+  const minutes = Math.floor(secondsLeft / 60);
+  const seconds = secondsLeft % 60;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.5 }}
         className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl"
       >
-        <h2 className="text-3xl font-bold text-gray-900 text-center mb-6">
-          Verify OTP
-        </h2>
+        <h2 className="text-3xl font-bold text-center mb-4">Verify OTP</h2>
         <p className="text-gray-600 text-center mb-6 text-sm">
-          Enter the 6-digit code sent to your email.
+          Enter the 6-digit code sent to your email
         </p>
 
-        <form onSubmit={onSubmit} className="space-y-6">
-          {/* OTP Boxes */}
-          <div className="flex justify-between gap-2">
-            {otp.map((digit, index) => (
-              <input
-                key={index}
-                ref={(el) => (inputRefs.current[index] = el)}
-                type="text"
-                maxLength="1"
-                value={digit}
-                onChange={(e) => handleChange(e.target.value, index)}
-                onKeyDown={(e) => handleKeyDown(e, index)}
-                className={`"w-12 h-12 md:w-14 md:h-14 text-center text-xl font-bold 
-                bg-white/20 text-gray-900 border ${
-                  err ? "border-red-400" : "border-gray-400"
-                } rounded-lg 
-                backdrop-blur-sm focus:ring-2 focus:ring-blue-300 outline-none"`}
-              />
-            ))}
-          </div>
-        </form>
+        {/* OTP INPUTS */}
+        <div className="flex justify-between gap-2 mb-6">
+          {otp.map((digit, index) => (
+            <input
+              key={index}
+              ref={(el) => (inputRefs.current[index] = el)}
+              type="text"
+              inputMode="numeric"
+              maxLength={1}
+              value={digit}
+              onChange={(e) => handleChange(e.target.value, index)}
+              onKeyDown={(e) => handleKeyDown(e, index)}
+              onPaste={handlePaste}
+              className={`w-12 h-12 md:w-14 md:h-14 text-center text-xl font-bold
+                border rounded-lg outline-none
+                ${err ? "border-red-400" : "border-gray-400"}
+                focus:ring-2 focus:ring-blue-300`}
+            />
+          ))}
+        </div>
 
-        {/* Resend OTP */}
-        <div className="text-center text-gray-600 mt-6 text-sm">
-          Didn’t receive the code?{" "}
+        {/* TIMER + RESEND */}
+        <div className="flex justify-between items-center text-sm mb-4">
+          {secondsLeft > 0 ? (
+            <p className="text-gray-600">
+              Expires in{" "}
+              <span className="font-semibold">
+                {minutes}:{seconds.toString().padStart(2, "0")}
+              </span>
+            </p>
+          ) : (
+            <p className="text-red-500 font-semibold">OTP expired</p>
+          )}
+
           <button
             onClick={resendOtpSubmit}
             className="text-blue-600 underline hover:text-blue-700"
@@ -107,4 +155,5 @@ const OTPVerify = ({ onSubmit }) => {
     </div>
   );
 };
+
 export default OTPVerify;

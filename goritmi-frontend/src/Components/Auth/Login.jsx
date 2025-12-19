@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 
 const Login = () => {
   const nav = useNavigate();
-  const { login } = useAuth();
+  const { login, sendOtp } = useAuth();
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -20,13 +20,21 @@ const Login = () => {
     try {
       const res = await login(form);
       toast.success(res.message, { position: "top-right", autoClose: 1000 });
+
+      if (res.requiresOtp) {
+        nav("/verify-email");
+        return;
+      }
       nav("/dashboard");
     } catch (error) {
       toast.error(error.message, { position: "top-right", autoClose: 1000 });
     }
   };
   // handle forgot password
-  const handleForgotPassword = async () => {};
+  const handleForgotPassword = async () => {
+    await sendOtp(form.email);
+    nav("/forgot-password/verify");
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">

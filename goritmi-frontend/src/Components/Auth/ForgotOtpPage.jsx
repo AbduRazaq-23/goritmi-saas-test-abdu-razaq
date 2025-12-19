@@ -4,13 +4,14 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const ForgotOtpPage = () => {
-  const { verifyOtp } = useAuth();
   const nav = useNavigate();
+  const { verifyOtp } = useAuth();
 
   const handleSubmit = async (otp) => {
-    const newOtp = otp.join("");
-    await verifyOtp(newOtp);
-    nav("/reset-password");
+    //Call API
+    await verifyOtp(otp);
+    // success → redirect
+    nav("/change/password");
   };
   return (
     <div>

@@ -8,9 +8,8 @@ const SignupOtpPage = () => {
   const { verifyEmail } = useAuth();
 
   const handleSubmit = async (otp) => {
-    const finalOtp = otp.join("");
     //Call API
-    await verifyEmail(finalOtp);
+    await verifyEmail(otp);
     // success → redirect
     nav("/dashboard");
   };
