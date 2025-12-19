@@ -275,6 +275,11 @@ const login = async (req, res) => {
       });
     }
 
+    // Check is user active
+    if (!user.isActive) {
+      return res.status(401).json({ message: "Your account is deactivated" });
+    }
+
     // Email verified → issue JWT
     const token = generateToken(user._id, user.role);
 
