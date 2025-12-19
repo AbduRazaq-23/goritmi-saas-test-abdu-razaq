@@ -1,6 +1,5 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import generateToken from "../utills/generateToken.js";
 import generateOtp from "../utills/generateOtp.js";
 import sendEmail from "../utills/sendEmail.js";
@@ -56,7 +55,7 @@ const register = async (req, res) => {
     // cookie options to store email
     const Options = {
       httpOnly: true,
-      maxAge: 5 * 60 * 1000, // 5 minutes
+      maxAge: 30 * 60 * 1000, // 5 minutes
       sameSite: "lax",
     };
 
@@ -66,7 +65,7 @@ const register = async (req, res) => {
     //  Return response as success
     return res.status(201).json({
       message: "Registration successful. OTP sent to email.",
-      user: { email: user.email },
+      user: { expireIt: user.emailOtpExpiresAt },
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: "server error" });
@@ -134,7 +133,7 @@ const verifyEmail = async (req, res) => {
     //  Issue JWT
     const token = generateToken(user._id, user.role);
 
-    // 🔐 HTTP-only cookie
+    // HTTP-only cookie
     res
       .cookie("token", token, {
         httpOnly: true,
@@ -144,7 +143,7 @@ const verifyEmail = async (req, res) => {
       })
       .clearCookie("email", email, {
         httpOnly: true,
-        maxAge: 5 * 60 * 1000, // 5 minutes
+        maxAge: 30 * 60 * 1000, // 5 minutes
         sameSite: "lax",
       });
 
@@ -210,9 +209,10 @@ const resendEmailOtp = async (req, res) => {
       `,
     });
 
-    return res
-      .status(200)
-      .json({ message: "OTP resent successfully. Please check your email." });
+    return res.status(200).json({
+      message: "OTP resent successfully. Please check your email.",
+      user: { expireIt: user.emailOtpExpiresAt },
+    });
   } catch (error) {
     return res.status(500).json({ message: "Server error" });
   }
@@ -267,11 +267,20 @@ const login = async (req, res) => {
           </div>
         `,
       });
+      // cookie options to store email
+      const Options = {
+        httpOnly: true,
+        maxAge: 10 * 60 * 1000, // 5 minutes
+        sameSite: "lax",
+      };
 
-      return res.status(403).json({
+      // set cookie to store email
+      res.cookie("email", email, Options);
+
+      return res.status(200).json({
         message: "Email not verified. OTP sent to email.",
+        user: { expireIt: user.emailOtpExpiresAt },
         requiresOtp: true,
-        email,
       });
     }
 
@@ -376,6 +385,11 @@ const updatePassword = async (req, res) => {
 const sendOTP = async (req, res) => {
   try {
     const { email } = req.body;
+
+    // Validate email is available
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
     // find email on db
     const user = await User.findOne({ email });
     // check email is available
@@ -384,7 +398,12 @@ const sendOTP = async (req, res) => {
     }
     // generate otp
     const otp = generateOtp();
-    user.emailOtpHash = otp;
+
+    const hashOtp = await bcrypt.hash(otp, 10);
+
+    user.emailOtpHash = hashOtp;
+    user.emailOtpAttempts = null;
+    user.emailOtpExpiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
     await user.save();
 
     //  Send OTP email
@@ -402,18 +421,19 @@ const sendOTP = async (req, res) => {
     // cookie options to store email
     const Options = {
       httpOnly: true,
-      maxAge: 5 * 60 * 1000, // 5 minutes
+      maxAge: 10 * 60 * 1000, // 5 minutes
       sameSite: "lax",
     };
 
     // set cookie to store email
     res.cookie("email", email, Options);
 
-    return res
-      .status(200)
-      .json({ message: "otp send successfully", id: user._id });
+    return res.status(200).json({
+      message: "otp send successfully",
+      user: { expireIt: user.emailOtpExpiresAt },
+    });
   } catch (error) {
-    return res.status(500).json({ message: "server error" });
+    return res.status(500).json({ message: error.message });
   }
 };
 // ===============================
@@ -423,6 +443,17 @@ const verifyOTP = async (req, res) => {
   try {
     const { otp } = req.body;
     const email = req.cookies.email;
+
+    // Validate otp is available
+    if (!otp) {
+      return res.status(400).json({ message: "otp required" });
+    }
+    // Validate email is available
+    if (!email) {
+      return res.status(404).json({ message: "email not found" });
+    }
+
+    // Find user
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "user not found" });
@@ -465,7 +496,7 @@ const verifyOTP = async (req, res) => {
     await user.save();
 
     return res.status(200).json({
-      message: "Email Verified",
+      message: "Forgot Otp verified Verified",
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -479,11 +510,21 @@ const changePassword = async (req, res) => {
     const { password } = req.body;
     const email = req.cookies.email;
 
+    // Validate password is available
+    if (!password) {
+      return res.status(400).json({ message: "password required" });
+    }
+
+    // Validate Email is available
+    if (!email) {
+      return res.status(400).json({ message: "email required" });
+    }
+
     // Find user
-    const user = await User.findOne(email);
+    const user = await User.findOne({ email }).select("+passwordHash");
 
     if (!user) {
-      return res.status(404).json({ message: "invalid id" });
+      return res.status(404).json({ message: "user not found" });
     }
     // hash password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -494,7 +535,7 @@ const changePassword = async (req, res) => {
 
     // forgotVerifyOtp = false and save new password
     user.forgotVerifyOtp = false;
-    user.password = hashedPassword;
+    user.passwordHash = hashedPassword;
     await user.save();
 
     // clear email from cookie
