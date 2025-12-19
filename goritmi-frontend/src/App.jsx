@@ -8,6 +8,7 @@ import ProtectedRoute from "./Routes/ProtectedRoutes";
 
 import SignupOtpPage from "./Components/Auth/SignupOtpPage";
 import ForgotOtpPage from "./Components/Auth/ForgotOtpPage";
+import ChangePassword from "./Components/Auth/ChangePassword";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email" element={<SignupOtpPage />} />
         <Route path="/forgot-password/verify" element={<ForgotOtpPage />} />
+        <Route path="/change/password" element={<ChangePassword />} />
         <Route
           path="/dashboard/*"
           element={
