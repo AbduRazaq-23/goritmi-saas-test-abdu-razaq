@@ -4,6 +4,11 @@ import connectDB from "./src/config/db.js";
 const app = express();
 import cors from "cors";
 import cookieParser from "cookie-parser";
+// import route
+import authRoute from "./src/routes/auth.route.js";
+import userRoute from "./src/routes/user.route.js";
+import invoiceRoute from "./src/routes/invoice.route.js";
+import userInvoiceRoute from "./src/routes/userInvoice.route.js";
 
 app.use(
   cors({
@@ -18,13 +23,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// import route
-import authRoute from "./src/routes/auth.route.js";
-import userRoute from "./src/routes/user.route.js";
-
 // use that route
 app.use("/api/auth", authRoute);
 app.use("/api/user", userRoute);
+app.use("/api/admin", invoiceRoute);
+app.use("/api/user/invoices", userInvoiceRoute);
 
 connectDB()
   .then(() => {
