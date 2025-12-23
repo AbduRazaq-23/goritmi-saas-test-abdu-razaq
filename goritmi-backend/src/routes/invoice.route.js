@@ -4,6 +4,7 @@ const invoiceRoute = Router();
 import {
   createInvoice,
   getAdminInvoices,
+  getInvoiceById,
   getInvoiceSummary,
   updateInvoiceStatus,
 } from "../controllers/invoice.controller.js";
@@ -14,9 +15,10 @@ invoiceRoute.route("/invoices").post(verifyUser, adminOnly, createInvoice);
 invoiceRoute
   .route("/invoices/:id/status")
   .patch(verifyUser, adminOnly, updateInvoiceStatus);
-invoiceRoute.route("/invoices").patch(verifyUser, adminOnly, getAdminInvoices);
+invoiceRoute.route("/invoices").get(verifyUser, adminOnly, getAdminInvoices);
 invoiceRoute
   .route("/invoices/summary")
   .get(verifyUser, adminOnly, getInvoiceSummary);
+invoiceRoute.route("/invoice/:id").get(verifyUser, adminOnly, getInvoiceById);
 
 export default invoiceRoute;

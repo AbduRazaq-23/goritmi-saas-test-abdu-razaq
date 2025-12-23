@@ -220,6 +220,16 @@ const getAdminInvoices = async (req, res) => {
 //  GET INVOICE SUMMARY
 // ===========================================
 
+const getInvoiceById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const invoice = await Invoice.findById(id);
+    return res.status(200).json({ invoice });
+  } catch (error) {
+    console.error("Invoice  error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 const getInvoiceSummary = async (req, res) => {
   try {
     const summary = await Invoice.aggregate([
@@ -266,4 +276,5 @@ export {
   updateInvoiceStatus,
   getAdminInvoices,
   getInvoiceSummary,
+  getInvoiceById,
 };

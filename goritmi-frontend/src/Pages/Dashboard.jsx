@@ -5,6 +5,9 @@ import AnalyticsCards from "../Components/Dashboard/AnalyticsCards";
 import Profile from "../Components/Dashboard/Profile";
 import { Routes, Route } from "react-router-dom";
 import GetAllUser from "../Components/Dashboard/GetAllUser";
+import Summary from "../Components/Dashboard/Summary";
+import Invoice from "../Components/Dashboard/Invoice";
+import CreateInvoice from "../Components/Dashboard/CreateInvoice";
 
 const Dashboard = () => {
   return (
@@ -19,6 +22,12 @@ const Dashboard = () => {
               <Route path="/" element={<AnalyticsCards />} />
               <Route path="profile" element={<Profile />} />
               <Route path="all-users" element={<GetAllUser />} />
+              <Route path="invoices" element={<Summary />} />
+              <Route path="/admin/invoice/:id" element={<Invoice />} />
+              <Route
+                path="/admin/invoices/create"
+                element={<CreateInvoice />}
+              />
               // Add more protected routes here
             </Routes>
           </div>

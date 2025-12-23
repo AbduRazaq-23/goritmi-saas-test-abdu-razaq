@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import Login from "./Components/Auth/Login";
 import Register from "./Components/Auth/Register";
 import Dashboard from "./Pages/Dashboard";
-import ProtectedRoute from "./Routes/ProtectedRoutes";
+import { ProtectedRoute } from "./Routes/ProtectedRoutes";
 
 import SignupOtpPage from "./Components/Auth/SignupOtpPage";
 import ForgotOtpPage from "./Components/Auth/ForgotOtpPage";
