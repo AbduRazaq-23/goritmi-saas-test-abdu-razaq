@@ -9,9 +9,7 @@ import InvoiceStatusLog from "../models/invoiceStatusLog.model.js";
 
 const createInvoice = async (req, res) => {
   try {
-    const { items, tax = 0, discount = 0, dueDate, notes } = req.body;
-
-    const userId = req.user.id;
+    const { userId, items, tax = 0, discount = 0, dueDate, notes } = req.body;
 
     // 1 Validate required fields
     if (!items || !Array.isArray(items) || items.length === 0) {
