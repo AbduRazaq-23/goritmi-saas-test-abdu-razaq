@@ -7,7 +7,7 @@ import { useAuth } from "../../context/AuthContext";
 
 const SideBar = () => {
   const { logout, user } = useAuth();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const loc = useLocation();
 
   const nav = [
@@ -26,7 +26,7 @@ const SideBar = () => {
 
   return (
     <aside
-      className={`bg-gray-900 p-2 transition-all duration-200 min-w-0 ${
+      className={`sticky top-0 z-50 h-screen bg-gray-900 p-2 transition-all duration-200 min-w-0 ${
         collapsed ? "w-20" : "w-64"
       }`}
     >
