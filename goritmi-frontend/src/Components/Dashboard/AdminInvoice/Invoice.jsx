@@ -149,7 +149,7 @@ const Invoice = () => {
       </div>
 
       <button
-        onClick={() => navigate("/dashboard/invoices")}
+        onClick={() => navigate("/dashboard/admin/invoices")}
         className="mt-6 text-blue-600 underline"
       >
         ← Back to list

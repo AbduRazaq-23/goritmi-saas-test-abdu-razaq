@@ -65,7 +65,7 @@ const CreateInvoice = () => {
     try {
       setLoading(true);
       await axios.post("http://localhost:5000/api/admin/invoices", form);
-      navigate("/dashboard/invoices");
+      navigate("/dashboard/admin/invoices");
     } catch (err) {
       alert("Failed to create invoice");
     } finally {
@@ -101,41 +101,58 @@ const CreateInvoice = () => {
           <h2 className="font-semibold mb-2">Items</h2>
 
           {form?.items?.map((item, index) => (
-            <div key={index} className="grid grid-cols-4 gap-4 mb-2">
-              <input
-                type="text"
-                placeholder="Description"
-                value={item.description}
-                onChange={(e) =>
-                  handleItemChange(index, "description", e.target.value)
-                }
-                className="border p-2 rounded col-span-2"
-                required
-              />
+            <div key={index} className="md:grid grid-cols-4 gap-4 mb-2">
+              <div className="flex flex-col col-span-2">
+                <label>Description</label>
+                <input
+                  type="text"
+                  placeholder="Description"
+                  value={item.description}
+                  onChange={(e) =>
+                    handleItemChange(index, "description", e.target.value)
+                  }
+                  className="border p-2 rounded "
+                  required
+                />
+              </div>
 
-              <input
-                type="number"
-                min="1"
-                placeholder="Qty"
-                value={item.qty}
-                onChange={(e) =>
-                  handleItemChange(index, "qty", Number(e.target.value))
-                }
-                className="border p-2 rounded"
-                required
-              />
+              <div className="flex flex-col">
+                <label>Qty</label>
+                <input
+                  type="number"
+                  min="1"
+                  placeholder="Qty"
+                  value={item.qty}
+                  onChange={(e) =>
+                    handleItemChange(index, "qty", Number(e.target.value))
+                  }
+                  className="border p-2 rounded"
+                  required
+                />
+              </div>
 
-              <input
-                type="number"
-                min="0"
-                placeholder="Unit Price"
-                value={item.unitPrice}
-                onChange={(e) =>
-                  handleItemChange(index, "unitPrice", Number(e.target.value))
-                }
-                className="border p-2 rounded"
-                required
-              />
+              <div className="flex flex-col">
+                <label>Unit Price</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  placeholder="Unit Price"
+                  value={item.unitPrice}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    if (/^\d*$/.test(v)) {
+                      handleItemChange(
+                        index,
+                        "unitPrice",
+                        v === "" ? "" : Number(v)
+                      );
+                    }
+                  }}
+                  className="border p-2 rounded"
+                  required
+                />
+              </div>
 
               {form.items.length > 1 && (
                 <button
@@ -163,12 +180,17 @@ const CreateInvoice = () => {
           <div>
             <label className="block mb-1">Tax</label>
             <input
-              type="number"
-              min="0"
-              value={form.tax}
-              onChange={(e) =>
-                setForm({ ...form, tax: Number(e.target.value) })
-              }
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              placeholder="Discount"
+              value={form.tax === 0 ? "" : form.tax}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d*$/.test(value)) {
+                  setForm({ ...form, tax: value === "" ? "" : Number(value) });
+                }
+              }}
               className="border p-2 rounded w-full"
             />
           </div>
@@ -176,12 +198,20 @@ const CreateInvoice = () => {
           <div>
             <label className="block mb-1">Discount</label>
             <input
-              type="number"
-              min="0"
-              value={form.discount}
-              onChange={(e) =>
-                setForm({ ...form, discount: Number(e.target.value) })
-              }
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              placeholder="Discount"
+              value={form.discount === 0 ? "" : form.discount}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d*$/.test(value)) {
+                  setForm({
+                    ...form,
+                    discount: value === "" ? "" : Number(value),
+                  });
+                }
+              }}
               className="border p-2 rounded w-full"
             />
           </div>
