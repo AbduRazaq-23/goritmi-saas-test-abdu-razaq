@@ -5,9 +5,12 @@ import AnalyticsCards from "../Components/Dashboard/AnalyticsCards";
 import Profile from "../Components/Dashboard/Profile";
 import { Routes, Route } from "react-router-dom";
 import GetAllUser from "../Components/Dashboard/GetAllUser";
-import Summary from "../Components/Dashboard/Summary";
-import Invoice from "../Components/Dashboard/Invoice";
-import CreateInvoice from "../Components/Dashboard/CreateInvoice";
+
+import Summary from "../Components/Dashboard/AdminInvoice/Summary";
+import Invoice from "../Components/Dashboard/AdminInvoice/Invoice";
+import CreateInvoice from "../Components/Dashboard/AdminInvoice/CreateInvoice";
+import UserInvoices from "../Components/Dashboard/UserInvoice/UserInvoices";
+import UserInvoiceDetail from "../Components/Dashboard/UserInvoice/userInvoiceDetail";
 
 const Dashboard = () => {
   return (
@@ -21,13 +24,14 @@ const Dashboard = () => {
             <Routes>
               <Route path="/" element={<AnalyticsCards />} />
               <Route path="profile" element={<Profile />} />
-              <Route path="all-users" element={<GetAllUser />} />
-              <Route path="invoices" element={<Summary />} />
-              <Route path="/admin/invoice/:id" element={<Invoice />} />
-              <Route
-                path="/admin/invoices/create"
-                element={<CreateInvoice />}
-              />
+              {/* user invoices  */}
+              <Route path="user/invoices" element={<UserInvoices />} />
+              <Route path="user/invoices/:id" element={<UserInvoiceDetail />} />
+              {/* admin invoices  */}
+              <Route path="admin/all-users" element={<GetAllUser />} />
+              <Route path="admin/invoices" element={<Summary />} />
+              <Route path="admin/invoice/:id" element={<Invoice />} />
+              <Route path="admin/invoices/create" element={<CreateInvoice />} />
               // Add more protected routes here
             </Routes>
           </div>

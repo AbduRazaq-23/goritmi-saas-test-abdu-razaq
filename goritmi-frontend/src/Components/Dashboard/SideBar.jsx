@@ -12,13 +12,17 @@ const SideBar = () => {
 
   const nav = [
     { path: "/dashboard", label: "Overview", icon: <FaHome /> },
+    // dynamic path for admin & user
     {
-      path: "/dashboard/invoices",
+      path:
+        user?.role === "admin"
+          ? "/dashboard/admin/invoices"
+          : "/dashboard/user/invoices",
       label: "Invoices",
       icon: <FaFileInvoiceDollar />,
     },
     { path: "/dashboard/profile", label: "Profile", icon: <FaUser /> },
-    { path: "/dashboard/all-users", label: "Users", icon: <FaUsers /> },
+    { path: "/dashboard/admin/all-users", label: "Users", icon: <FaUsers /> },
   ];
 
   const isAdmin = user?.role === "admin";
