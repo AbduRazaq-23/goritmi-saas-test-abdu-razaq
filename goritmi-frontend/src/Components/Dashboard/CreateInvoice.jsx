@@ -74,7 +74,7 @@ const CreateInvoice = () => {
   };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
+    <div className="p-6 max-w-5xl mx-auto rounded-md shadow-md">
       <h1 className="text-2xl font-semibold mb-6">Create Invoice</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
