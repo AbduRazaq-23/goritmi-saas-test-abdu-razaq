@@ -10,7 +10,7 @@ const OTPVerify = ({ onSubmit }) => {
   const inputRefs = useRef([]);
   const [secondsLeft, setSecondsLeft] = useState(0);
 
-  /* ------------------ HANDLE OTP CHANGE ------------------ */
+  // HANDLE OTP CHANGE
   const handleChange = (value, index) => {
     if (!/^\d?$/.test(value)) return;
 
@@ -23,7 +23,7 @@ const OTPVerify = ({ onSubmit }) => {
     }
   };
 
-  /* ------------------ HANDLE BACKSPACE ------------------ */
+  //HANDLE BACKSPACE
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace") {
       if (!otp[index] && index > 0) {
@@ -36,7 +36,7 @@ const OTPVerify = ({ onSubmit }) => {
     }
   };
 
-  /* ------------------ HANDLE PASTE ------------------ */
+  // HANDLE PASTE
   const handlePaste = (e) => {
     e.preventDefault();
     const pasted = e.clipboardData
@@ -55,7 +55,7 @@ const OTPVerify = ({ onSubmit }) => {
     inputRefs.current[Math.min(pasted.length - 1, OTP_LENGTH - 1)]?.focus();
   };
 
-  /* ------------------ AUTO SUBMIT ------------------ */
+  //AUTO SUBMIT
   useEffect(() => {
     const isComplete = otp.every((d) => /^\d$/.test(d));
     if (isComplete) {
@@ -63,7 +63,17 @@ const OTPVerify = ({ onSubmit }) => {
     }
   }, [otp]);
 
-  /* ------------------ TIMER ------------------ */
+  // RESEND OTP
+  const resendOtpSubmit = async () => {
+    setOtp(Array(OTP_LENGTH).fill(""));
+    inputRefs.current[0]?.focus();
+    const res = await resendOtp(); // backend returns new otpExpiresAt
+    const newExpiry = res.otpExpiresAt;
+    setOtpExpiresAt(newExpiry);
+    localStorage.setItem("otpExpiresAt", newExpiry);
+  };
+
+  //TIMER
   useEffect(() => {
     // get expiry from localStorage or context
     let expiryISO = localStorage.getItem("expireIt");
@@ -82,17 +92,7 @@ const OTPVerify = ({ onSubmit }) => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
-
-  /* ------------------ RESEND OTP ------------------ */
-  const resendOtpSubmit = async () => {
-    setOtp(Array(OTP_LENGTH).fill(""));
-    inputRefs.current[0]?.focus();
-    const res = await resendOtp(); // backend returns new otpExpiresAt
-    const newExpiry = res.otpExpiresAt;
-    setOtpExpiresAt(newExpiry);
-    localStorage.setItem("otpExpiresAt", newExpiry);
-  };
+  }, [resendOtpSubmit]);
 
   const minutes = Math.floor(secondsLeft / 60);
   const seconds = secondsLeft % 60;
@@ -103,7 +103,7 @@ const OTPVerify = ({ onSubmit }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl"
+        className="w-full max-w-md bg-white p-3 md:p-8 rounded-2xl shadow-xl"
       >
         <h2 className="text-3xl font-bold text-center mb-4">Verify OTP</h2>
         <p className="text-gray-600 text-center mb-6 text-sm">
@@ -111,7 +111,7 @@ const OTPVerify = ({ onSubmit }) => {
         </p>
 
         {/* OTP INPUTS */}
-        <div className="flex justify-between gap-2 mb-6">
+        <div className="flex justify-between gap-1 md:gap-2 mb-6">
           {otp.map((digit, index) => (
             <input
               key={index}
@@ -141,6 +141,9 @@ const OTPVerify = ({ onSubmit }) => {
               </span>
             </p>
           ) : (
+            <p></p>
+          )}
+          {secondsLeft < 0 && (
             <p className="text-red-500 font-semibold">OTP expired</p>
           )}
 
