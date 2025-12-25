@@ -57,32 +57,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  //========================
-  // RESEND OTP API CALL
-  //========================
-  const resendOtp = async () => {
-    try {
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/otp/resend",
-        {}
-      );
-
-      const user = res.data.user;
-
-      // Update user state
-      setUser(user);
-
-      // Save new OTP expiry in localStorage
-      if (user?.expireIt) {
-        localStorage.setItem("expireIt", user.expireIt);
-      }
-
-      toast.success(res.data.message);
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Too many requests");
-    }
-  };
-
   //====================================================
   // FORGOT PASSWORD START
   //====================================================
@@ -124,6 +98,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("expireIt");
       toast.success(res.data.message);
     } catch (error) {
+      toast.error(error.message);
       setErr(error.response?.data?.message);
       throw new Error(error.response?.data?.message || "verify otp failled");
     }
@@ -224,7 +199,6 @@ export const AuthProvider = ({ children }) => {
         err,
         register,
         verifyEmail,
-        resendOtp,
         sendOtp,
         verifyOtp,
         changePassword,

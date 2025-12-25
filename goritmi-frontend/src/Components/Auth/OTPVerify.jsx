@@ -4,8 +4,8 @@ import { useAuth } from "../../context/AuthContext";
 
 const OTP_LENGTH = 6;
 
-const OTPVerify = ({ onSubmit }) => {
-  const { err, resendOtp } = useAuth();
+const OTPVerify = ({ onSubmit, onResend }) => {
+  const { err } = useAuth();
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""));
   const inputRefs = useRef([]);
   const [secondsLeft, setSecondsLeft] = useState(0);
@@ -67,9 +67,10 @@ const OTPVerify = ({ onSubmit }) => {
   const resendOtpSubmit = async () => {
     setOtp(Array(OTP_LENGTH).fill(""));
     inputRefs.current[0]?.focus();
-    const res = await resendOtp(); // backend returns new otpExpiresAt
-    const newExpiry = res.otpExpiresAt;
-    setOtpExpiresAt(newExpiry);
+
+    if (!onResend) return;
+    const res = await onResend(); // backend returns new otpExpiresAt
+    const newExpiry = res.expireIt;
     localStorage.setItem("otpExpiresAt", newExpiry);
   };
 
