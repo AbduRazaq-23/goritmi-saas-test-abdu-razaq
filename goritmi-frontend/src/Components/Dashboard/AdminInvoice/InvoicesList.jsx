@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
@@ -14,47 +14,52 @@ const InvoiceList = () => {
   const [status, setStatus] = useState("");
   const [search, setSearch] = useState("");
 
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+
+  // debounced search value
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
   //  Fetch invoices
-  const fetchInvoices = async () => {
+  const fetchInvoices = useCallback(async () => {
     try {
       setLoading(true);
+
       const res = await axios.get("http://localhost:5000/api/admin/invoices", {
         params: {
           page,
           limit: 10,
           status: status || undefined,
-          search: search || undefined,
+          search: debouncedSearch || undefined,
         },
       });
 
       setInvoices(res.data.data);
       setTotalPages(res.data.pagination.totalPages);
-    } catch (error) {
-      console.error("Failed to load invoices");
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, status, debouncedSearch]);
 
-  //  Refetch when filters change
+  // Fetch immediately when deps change
   useEffect(() => {
     fetchInvoices();
-  }, [page, status]);
-
-  // debouncing for search
-  useEffect(() => {
-    const timer = setTimeout(fetchInvoices, 400);
-    return () => clearTimeout(timer);
-  }, [search]);
+  }, [fetchInvoices]);
 
   return (
     <div className="mt-2">
       <div className="flex flex-col md:flex-row justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">Invoices</h1>
 
+        {/* Create invoice button  */}
         <button
           onClick={() => navigate("/dashboard/admin/invoices/create")}
-          className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded"
+          className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded cursor-pointer"
         >
           + Create Invoice
         </button>
@@ -89,15 +94,16 @@ const InvoiceList = () => {
       </div>
 
       {/* 📋 Table */}
-      <div className="min-h-[350px]">
+      {/* 📋 Desktop Table */}
+      <div className="hidden md:block min-h-[350px]">
         <table className="w-full border-collapse bg-white shadow rounded min-h-[200px]">
           <thead className="bg-gray-100">
             <tr>
               <th className="p-3 text-left">Invoice No</th>
-              <th className="hidden md:table-cell p-3 text-left">User</th>
-              <th className="hidden md:table-cell p-3 text-left">Amount</th>
-              <th className="hidden md:table-cell p-3 text-left">Status</th>
-              <th className="hidden md:table-cell p-3 text-left">Created</th>
+              <th className="p-3 text-left">User</th>
+              <th className="p-3 text-left">Amount</th>
+              <th className="p-3 text-left">Status</th>
+              <th className="p-3 text-left">Created</th>
               <th className="p-3 text-left">Action</th>
             </tr>
           </thead>
@@ -119,35 +125,28 @@ const InvoiceList = () => {
               invoices.map((inv) => (
                 <tr key={inv._id} className="border-t">
                   <td className="p-3">{inv.invoiceNumber}</td>
-                  <td className="hidden md:table-cell p-3">
-                    {inv.userId?.email}
-                  </td>
-                  <td className="hidden md:table-cell p-3">
-                    PKR {inv.totalAmount}
-                  </td>
+                  <td className="p-3">{inv.userId?.email}</td>
+                  <td className="p-3">PKR {inv.totalAmount}</td>
                   <td className="p-3">
                     <span
-                      className={`hidden md:table-cell px-2 py-1 rounded text-sm font-medium
-                ${
-                  inv.status === "DUE"
-                    ? "bg-yellow-100 text-yellow-700"
-                    : inv.status === "PAID"
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
-                }`}
+                      className={`px-2 py-1 rounded text-sm font-medium
+                  ${
+                    inv.status === "DUE"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : inv.status === "PAID"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
                     >
                       {inv.status}
                     </span>
                   </td>
-                  <td className="hidden md:table-cell p-3">
+                  <td className="p-3">
                     {new Date(inv.createdAt).toLocaleDateString()}
                   </td>
                   <td className="p-3">
                     <Link to={`/dashboard/admin/invoice/${inv._id}`}>
-                      <button
-                        type="button"
-                        className="text-blue-600 hover:underline"
-                      >
+                      <button className="text-blue-600 hover:underline">
                         View
                       </button>
                     </Link>
@@ -157,6 +156,62 @@ const InvoiceList = () => {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* 📱 Mobile Cards */}
+      <div className="md:hidden space-y-4">
+        {loading ? (
+          <div className="bg-white p-6 rounded shadow text-center">
+            Loading invoices...
+          </div>
+        ) : invoices.length === 0 ? (
+          <div className="bg-white p-6 rounded shadow text-center">
+            No invoices found
+          </div>
+        ) : (
+          invoices.map((inv) => (
+            <div
+              key={inv._id}
+              className="bg-white border rounded-lg p-4 shadow"
+            >
+              <div className="flex justify-between items-center mb-2">
+                <span className="font-semibold">{inv.invoiceNumber}</span>
+                <span
+                  className={`px-2 py-1 rounded text-xs font-medium
+              ${
+                inv.status === "DUE"
+                  ? "bg-yellow-100 text-yellow-700"
+                  : inv.status === "PAID"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
+              }`}
+                >
+                  {inv.status}
+                </span>
+              </div>
+
+              <p className="text-sm text-gray-600 mb-1">
+                <span className="font-medium">User:</span> {inv.userId?.email}
+              </p>
+
+              <p className="text-sm text-gray-600 mb-1">
+                <span className="font-medium">Amount:</span> PKR{" "}
+                {inv.totalAmount}
+              </p>
+
+              <p className="text-sm text-gray-600 mb-3">
+                <span className="font-medium">Created:</span>{" "}
+                {new Date(inv.createdAt).toLocaleDateString()}
+              </p>
+
+              <Link to={`/dashboard/admin/invoice/${inv._id}`}>
+                <button className="w-full text-center text-blue-600 font-medium border border-gray-600 rounded py-2 hover:bg-gray-50">
+                  View
+                </button>
+              </Link>
+            </div>
+          ))
+        )}
       </div>
 
       {/* 📄 Pagination */}

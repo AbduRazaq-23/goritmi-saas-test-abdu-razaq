@@ -61,28 +61,62 @@ const UserInvoiceDetail = () => {
 
       {/* Items */}
       <div className="bg-white shadow rounded mb-6">
-        <table className="w-full">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-3 text-left">Description</th>
-              <th className="p-3">Qty</th>
-              <th className="p-3">Unit Price</th>
-              <th className="p-3">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {invoice.items.map((item, idx) => (
-              <tr key={idx} className="border-t">
-                <td className="p-3">{item.description}</td>
-                <td className="p-3 text-center">{item.qty}</td>
-                <td className="p-3 text-center">PKR {item.unitPrice}</td>
-                <td className="p-3 text-center">
-                  PKR {item.qty * item.unitPrice}
-                </td>
+        {/* ── DESKTOP ──  */}
+        <div className="hidden md:block">
+          <table className="w-full">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="p-3 text-left">Description</th>
+                <th className="p-3">Qty</th>
+                <th className="p-3">Unit Price</th>
+                <th className="p-3">Total</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {invoice.items.map((item, idx) => (
+                <tr key={idx} className="border-t">
+                  <td className="p-3">{item.description}</td>
+                  <td className="p-3 text-center">{item.qty}</td>
+                  <td className="p-3 text-center">PKR {item.unitPrice}</td>
+                  <td className="p-3 text-center">
+                    PKR {item.qty * item.unitPrice}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* ── MOBILE ──  ── */}
+        <div className="md:hidden space-y-4 p-4">
+          {invoice?.items.map((item, idx) => (
+            <div
+              key={idx}
+              className="border rounded-lg p-4 shadow-sm bg-gray-50"
+            >
+              <h4 className="font-semibold text-gray-900 mb-2">
+                {item.description}
+              </h4>
+
+              <div className="flex justify-between text-sm mb-1">
+                <span className="text-gray-500">Qty</span>
+                <span className="font-medium">{item.qty}</span>
+              </div>
+
+              <div className="flex justify-between text-sm mb-1">
+                <span className="text-gray-500">Unit Price</span>
+                <span className="font-medium">PKR {item.unitPrice}</span>
+              </div>
+
+              <div className="flex justify-between text-sm border-t pt-2 mt-2">
+                <span className="text-gray-700 font-medium">Total</span>
+                <span className="font-semibold text-gray-900">
+                  PKR {item.qty * item.unitPrice}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Summary */}
