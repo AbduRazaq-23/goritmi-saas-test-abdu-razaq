@@ -1,4 +1,5 @@
 import User from "../models/user.model.js";
+import Invoice from "../models/invoice.model.js";
 
 // ===============================
 // 📌 GET USER PROFILE
@@ -84,6 +85,8 @@ const deleteUser = async (req, res) => {
     if (!id) {
       return res.status(400).json({ message: "no id" });
     }
+    const invoice = await Invoice.deleteMany({ userId: id });
+
     const user = await User.findByIdAndDelete(id);
     if (!user) {
       return res.status(400).json({ message: "user not found" });
