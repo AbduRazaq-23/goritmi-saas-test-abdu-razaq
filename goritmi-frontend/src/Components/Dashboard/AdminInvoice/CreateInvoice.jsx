@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Select from "react-select";
 
 const CreateInvoice = () => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const CreateInvoice = () => {
     notes: "",
   });
 
-  // 🔹 Load users for dropdown
+  //  Load users for dropdown
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -33,14 +34,14 @@ const CreateInvoice = () => {
     fetchUsers();
   }, []);
 
-  // 🔹 Handle item change
+  //  Handle item change
   const handleItemChange = (index, field, value) => {
     const updatedItems = [...form.items];
     updatedItems[index][field] = value;
     setForm({ ...form, items: updatedItems });
   };
 
-  // 🔹 Add new item row
+  //  Add new item row
   const addItem = () => {
     setForm({
       ...form,
@@ -48,13 +49,13 @@ const CreateInvoice = () => {
     });
   };
 
-  // 🔹 Remove item row
+  //  Remove item row
   const removeItem = (index) => {
     const updatedItems = form.items.filter((_, i) => i !== index);
     setForm({ ...form, items: updatedItems });
   };
 
-  // 🔹 Submit form
+  //  Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -73,28 +74,44 @@ const CreateInvoice = () => {
     }
   };
 
+  //  Select User
+  const options = users.map((u) => ({
+    value: u._id,
+    label: `${u.email} (${u.name})`,
+  }));
+
   return (
     <div className="p-6 max-w-5xl mx-auto rounded-md shadow-md">
       <h1 className="text-2xl font-semibold mb-6">Create Invoice</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* User */}
-        <div>
-          <label className="block mb-1 font-medium">User</label>
-          <select
-            value={form.userId}
-            onChange={(e) => setForm({ ...form, userId: e.target.value })}
-            className="border p-2 rounded w-full"
-            required
-          >
-            <option value="">Select user</option>
-            {users?.map((user) => (
-              <option key={user._id} value={user._id}>
-                {user.email}
-              </option>
-            ))}
-          </select>
-        </div>
+        <Select
+          options={options}
+          onChange={(opt) => setForm({ ...form, userId: opt.value })}
+          placeholder="Search user..."
+          isSearchable
+          // box style
+          styles={{
+            control: (base, state) => ({
+              ...base,
+              borderColor: state.isFocused ? "#000" : "#000",
+              boxShadow: state.isFocused ? "0 0 0 1px #000" : "none",
+              "&:hover": {
+                borderColor: "#000",
+              },
+            }),
+            option: (base, state) => ({
+              ...base,
+              backgroundColor: state.isFocused ? "#e5e7eb" : "#fff",
+              color: "#000",
+            }),
+            singleValue: (base) => ({
+              ...base,
+              color: "#000",
+            }),
+          }}
+        />
 
         {/* Items */}
         <div>
