@@ -14,6 +14,7 @@ import {
   verifyOTP,
   changePassword,
   resendEmailOtp,
+  reSendOTP,
 } from "../controllers/auth.controller.js";
 // ===============================
 // 📌 IMPORT MIDDLEWARE
@@ -47,6 +48,7 @@ router
 // FORGOT PASSWORD
 // ==================================================
 router.route("/forgot-password").post(resendOtpLimiter, sendOTP);
+router.route("/resend/forgot/otp").post(resendOtpLimiter, reSendOTP);
 router.route("/verify-otp").post(verifyOTP);
 router.route("/change-password").post(changePassword);
 

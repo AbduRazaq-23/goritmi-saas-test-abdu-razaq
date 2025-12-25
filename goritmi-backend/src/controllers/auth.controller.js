@@ -421,7 +421,7 @@ const sendOTP = async (req, res) => {
     // cookie options to store email
     const Options = {
       httpOnly: true,
-      maxAge: 10 * 60 * 1000, // 5 minutes
+      maxAge: 10 * 60 * 1000, // 10 minutes
       sameSite: "lax",
     };
 
@@ -430,6 +430,53 @@ const sendOTP = async (req, res) => {
 
     return res.status(200).json({
       message: "otp send successfully",
+      user: { expireIt: user.emailOtpExpiresAt },
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+// ===============================
+// 📌 RESEND OTP
+// ===============================
+const reSendOTP = async (req, res) => {
+  try {
+    const email = req.cookies.email;
+
+    // Validate email is available
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+    // find email on db
+    const user = await User.findOne({ email });
+    // check email is available
+    if (!user) {
+      return res.status(404).json("email not found");
+    }
+    // generate otp
+    const otp = generateOtp();
+
+    const hashOtp = await bcrypt.hash(otp, 10);
+
+    user.emailOtpHash = hashOtp;
+    user.emailOtpAttempts = null;
+    user.emailOtpExpiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+    await user.save();
+
+    //  Send OTP email
+    await sendEmail({
+      to: email,
+      subject: "Goritmi Resend Verification Code",
+      html: ` <div style="font-family: Arial, sans-serif">
+        <h2>Verify your email</h2>
+        <p>Your OTP code is:</p>
+        <h1>${otp}</h1>
+        <p>This code will expire in 10 minutes.</p>
+      </div>`,
+    });
+
+    return res.status(200).json({
+      message: "otp resend successfully",
       user: { expireIt: user.emailOtpExpiresAt },
     });
   } catch (error) {
@@ -562,6 +609,7 @@ export {
   logout,
   updatePassword,
   sendOTP, //send otp forgot password
+  reSendOTP, //resend otp forgot password
   verifyOTP, //verify otp forgot password
   changePassword, //change password forgot password
 };
