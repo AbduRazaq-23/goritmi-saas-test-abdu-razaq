@@ -15,7 +15,7 @@ const InvoiceList = () => {
   const [search, setSearch] = useState("");
 
   //  Fetch invoices
-  const fetchInvoices = async (e) => {
+  const fetchInvoices = async () => {
     try {
       setLoading(true);
       const res = await axios.get("http://localhost:5000/api/admin/invoices", {
@@ -38,12 +38,14 @@ const InvoiceList = () => {
 
   //  Refetch when filters change
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchInvoices();
-    }, 400);
+    fetchInvoices();
+  }, [page, status]);
 
+  // debouncing for search
+  useEffect(() => {
+    const timer = setTimeout(fetchInvoices, 400);
     return () => clearTimeout(timer);
-  }, [page, status, search]);
+  }, [search]);
 
   return (
     <div className="mt-2">
@@ -87,44 +89,45 @@ const InvoiceList = () => {
       </div>
 
       {/* 📋 Table */}
-      <table className="w-full border-collapse bg-white shadow rounded min-h-[200px]">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="p-3 text-left">Invoice No</th>
-            <th className="hidden md:table-cell p-3 text-left">User</th>
-            <th className="hidden md:table-cell p-3 text-left">Amount</th>
-            <th className="hidden md:table-cell p-3 text-left">Status</th>
-            <th className="hidden md:table-cell p-3 text-left">Created</th>
-            <th className="p-3 text-left">Action</th>
-          </tr>
-        </thead>
+      <div className="min-h-[350px]">
+        <table className="w-full border-collapse bg-white shadow rounded min-h-[200px]">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="p-3 text-left">Invoice No</th>
+              <th className="hidden md:table-cell p-3 text-left">User</th>
+              <th className="hidden md:table-cell p-3 text-left">Amount</th>
+              <th className="hidden md:table-cell p-3 text-left">Status</th>
+              <th className="hidden md:table-cell p-3 text-left">Created</th>
+              <th className="p-3 text-left">Action</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          {loading ? (
-            <tr>
-              <td colSpan="6" className="p-6 text-center">
-                Loading invoices...
-              </td>
-            </tr>
-          ) : invoices.length === 0 ? (
-            <tr>
-              <td colSpan="6" className="p-4 text-center">
-                No invoices found
-              </td>
-            </tr>
-          ) : (
-            invoices.map((inv) => (
-              <tr key={inv._id} className="border-t">
-                <td className="p-3">{inv.invoiceNumber}</td>
-                <td className="hidden md:table-cell p-3">
-                  {inv.userId?.email}
+          <tbody className="relative">
+            {loading ? (
+              <tr className="absolute inset-0 bg-white/70">
+                <td colSpan="6" className="p-6 text-center">
+                  Loading invoices...
                 </td>
-                <td className="hidden md:table-cell p-3">
-                  PKR {inv.totalAmount}
+              </tr>
+            ) : invoices.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="p-4 text-center">
+                  No invoices found
                 </td>
-                <td className="p-3">
-                  <span
-                    className={`hidden md:table-cell px-2 py-1 rounded text-sm font-medium
+              </tr>
+            ) : (
+              invoices.map((inv) => (
+                <tr key={inv._id} className="border-t">
+                  <td className="p-3">{inv.invoiceNumber}</td>
+                  <td className="hidden md:table-cell p-3">
+                    {inv.userId?.email}
+                  </td>
+                  <td className="hidden md:table-cell p-3">
+                    PKR {inv.totalAmount}
+                  </td>
+                  <td className="p-3">
+                    <span
+                      className={`hidden md:table-cell px-2 py-1 rounded text-sm font-medium
                 ${
                   inv.status === "DUE"
                     ? "bg-yellow-100 text-yellow-700"
@@ -132,28 +135,29 @@ const InvoiceList = () => {
                     ? "bg-green-100 text-green-700"
                     : "bg-red-100 text-red-700"
                 }`}
-                  >
-                    {inv.status}
-                  </span>
-                </td>
-                <td className="hidden md:table-cell p-3">
-                  {new Date(inv.createdAt).toLocaleDateString()}
-                </td>
-                <td className="p-3">
-                  <Link to={`/dashboard/admin/invoice/${inv._id}`}>
-                    <button
-                      type="button"
-                      className="text-blue-600 hover:underline"
                     >
-                      View
-                    </button>
-                  </Link>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+                      {inv.status}
+                    </span>
+                  </td>
+                  <td className="hidden md:table-cell p-3">
+                    {new Date(inv.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="p-3">
+                    <Link to={`/dashboard/admin/invoice/${inv._id}`}>
+                      <button
+                        type="button"
+                        className="text-blue-600 hover:underline"
+                      >
+                        View
+                      </button>
+                    </Link>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {/* 📄 Pagination */}
       <div className="flex justify-center items-center gap-4 mt-3">
