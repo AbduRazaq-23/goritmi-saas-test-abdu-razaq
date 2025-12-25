@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const MyInvoices = () => {
+const UserInvoices = () => {
   const navigate = useNavigate();
 
   const [invoices, setInvoices] = useState([]);
@@ -29,6 +29,9 @@ const MyInvoices = () => {
     return <div className="p-6">Loading invoices...</div>;
   }
 
+  if (invoices.length === 0) {
+    return <div className="p-6">No invoices found</div>;
+  }
   if (error) {
     return <div className="p-6 text-red-600">{error}</div>;
   }
@@ -164,4 +167,4 @@ const MyInvoices = () => {
   );
 };
 
-export default MyInvoices;
+export default UserInvoices;
