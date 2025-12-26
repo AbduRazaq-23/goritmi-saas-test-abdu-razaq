@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }) => {
       setUser(res.data.user);
       toast.success(res.data.message);
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.response?.data?.message);
       setErr(error.response?.data?.message);
       throw new Error(error.response?.data?.message || "verification failed");
     }
@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }) => {
 
       toast.success(res.data.message);
     } catch (error) {
-      toast.error(error.response?.data?.message || error.message || "Failed");
+      toast.error(error.response?.data?.message || "Failed");
       setErr(error.response?.data?.message || "Failed");
       throw new Error(error.response?.data?.message || "Failed");
     }
@@ -98,7 +98,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("expireIt");
       toast.success(res.data.message);
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.response?.data?.message);
       setErr(error.response?.data?.message);
       throw new Error(error.response?.data?.message || "verify otp failled");
     }

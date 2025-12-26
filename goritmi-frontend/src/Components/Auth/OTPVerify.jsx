@@ -57,10 +57,17 @@ const OTPVerify = ({ onSubmit, onResend }) => {
 
   //AUTO SUBMIT
   useEffect(() => {
-    const isComplete = otp.every((d) => /^\d$/.test(d));
-    if (isComplete) {
-      onSubmit(otp.join(""));
-    }
+    (async () => {
+      try {
+        const isComplete = otp.every((d) => /^\d$/.test(d));
+        if (isComplete) {
+          await onSubmit(otp.join(""));
+        }
+      } catch (error) {
+        setOtp(Array(OTP_LENGTH).fill(""));
+        inputRefs.current[0]?.focus();
+      }
+    })();
   }, [otp]);
 
   // RESEND OTP
