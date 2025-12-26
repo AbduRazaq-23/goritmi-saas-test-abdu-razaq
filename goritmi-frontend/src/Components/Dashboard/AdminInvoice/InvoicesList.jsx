@@ -215,11 +215,11 @@ const InvoiceList = () => {
       </div>
 
       {/* 📄 Pagination */}
-      <div className="flex justify-center items-center gap-4 mt-3">
+      <div className="flex justify-center items-center gap-1 md:gap-4 mt-3">
         <button
           disabled={page === 1}
           onClick={() => setPage((p) => p - 1)}
-          className="border px-3 py-1 rounded disabled:opacity-50"
+          className="border px-1 md:px-3 py-1 rounded disabled:opacity-50"
         >
           Prev
         </button>
@@ -231,7 +231,7 @@ const InvoiceList = () => {
         <button
           disabled={page === totalPages}
           onClick={() => setPage((p) => p + 1)}
-          className="border px-3 py-1 rounded disabled:opacity-50"
+          className="border px-1 md:px-3 py-1 rounded disabled:opacity-50"
         >
           Next
         </button>
