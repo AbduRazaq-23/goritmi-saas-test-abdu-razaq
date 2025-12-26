@@ -3,12 +3,12 @@ import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { CiEdit } from "react-icons/ci";
+import gLogo from "../../assets/g-logo.png";
 
 const Profile = () => {
   const { user, setUser } = useAuth();
   const [editShow, setEditShow] = useState(false);
   const [form, setForm] = useState({ name: "", email: "" });
-  const [pass, setPass] = useState({ oldPassword: "", newPassword: "" });
 
   useEffect(() => {
     if (user) setForm({ name: user.name || "", email: user.email || "" });
@@ -17,15 +17,12 @@ const Profile = () => {
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handlePasswordChange = (e) =>
-    setPass({ ...pass, [e.target.name]: e.target.value });
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await axios.patch(
         "http://localhost:5000/api/user/update-profile",
-        form
+        form.name
       );
       setEditShow(!editShow);
       // update state on update
@@ -37,112 +34,66 @@ const Profile = () => {
     }
   };
 
-  const handlePasswordSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      // change password api call
-      const res = await axios.patch(
-        "http://localhost:5000/api/auth/update-password",
-        pass
-      );
-      setEditShow(!editShow);
-      // set password field empty
-      setPass({ oldPassword: "", newPassword: "" });
-      // toast to success message
-      toast.success(res?.data?.message, {
-        position: "top-right",
-        autoClose: "1000",
-      });
-    } catch (error) {
-      // toast to show error
-      toast.error(error?.response?.data?.message, {
-        position: "top-right",
-        autoClose: "1000",
-      });
-    }
-  };
+  const isAdmin = user.role === "admin";
 
   return (
-    <div className=" max-w-3xl mx-auto bg-white p-6 rounded-2xl shadow">
-      <h3 className="text-xl font-bold text-center mb-4">Profile</h3>
-      {!editShow ? (
-        <div className="text-center text-gray-800">
+    <div className=" max-w-3xl mx-auto bg-white p-2 rounded-2xl shadow-2xl">
+      {/* Logo  */}
+      <div className="w-full mb-5">
+        {isAdmin ? (
+          <img
+            src={gLogo}
+            alt="Grok logo"
+            width="200"
+            height="200"
+            loading="lazy"
+            className="m-auto"
+          />
+        ) : (
+          <h1 className="text-center font-bold text-2xl">User Profile</h1>
+        )}
+      </div>
+
+      <div className="flex flex-col items-center text-center border border-gray-400 rounded-md p-2 text-gray-800">
+        {/* Name Edit Form + Name  */}
+        {!editShow ? (
           <div className="flex justify-center items-center gap-2">
             <h1 className="font-semibold">{form.name} </h1>
             <CiEdit
               className="cursor-pointer"
               onClick={() => setEditShow(!editShow)}
-            />
+            />{" "}
           </div>
-          <h2 className="text-gray-700">{form.email}</h2>
-        </div>
-      ) : (
-        <>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="text-sm text-gray-600">Full name</label>
-              <input
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                className="w-full border rounded-md px-3 py-2"
-                autoComplete="username"
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-600">Email</label>
-              <input
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                className="w-full border rounded-md px-3 py-2"
-                autoComplete="email"
-              />
-            </div>
+        ) : (
+          <form onSubmit={handleSubmit} className=" flex  ">
+            <input
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              className=" border rounded-l-md text-center"
+              autoComplete="username"
+            />
 
             <button
               type="submit"
-              className=" w-full py-2 px-4 bg-gray-900 hover:bg-gray-800 text-white rounded-md"
+              className=" bg-gray-700 rounded-r-md text-white px-1 hover:bg-gray-800  "
             >
-              Save Changes
+              Save
             </button>
           </form>
+        )}
 
-          {/* //============= // Password //============= */}
-          <form onSubmit={handlePasswordSubmit}>
-            <h1 className="text-xl font-semibold text-center  my-5">
-              Change Password
-            </h1>
-            <div className="w-full flex flex-col  justify-between mt-2 gap-4">
-              <input
-                className="w-full border rounded-md px-3 py-2"
-                type="password"
-                name="oldPassword"
-                value={pass.oldPassword}
-                onChange={handlePasswordChange}
-                placeholder="Old Password"
-                autoComplete="old-password"
-              />
-              <input
-                className="w-full border rounded-md px-3 py-2"
-                type="password"
-                name="newPassword"
-                value={pass.newPassword}
-                onChange={handlePasswordChange}
-                placeholder="New Password"
-                autoComplete="new-password"
-              />
-              <button
-                type="submit"
-                className="py-2 px-4 bg-gray-900 hover:bg-gray-800 text-white rounded-md"
-              >
-                Change
-              </button>
-            </div>
-          </form>
-        </>
-      )}
+        <h2 className="text-gray-700">{form.email}</h2>
+        {isAdmin && (
+          <>
+            {" "}
+            <h2 className="text-gray-700">+923065011190</h2>
+            <h2 className="text-gray-700">
+              Al Sayed Plaza University Road Peshawar
+            </h2>
+          </>
+        )}
+      </div>
     </div>
   );
 };
