@@ -30,7 +30,7 @@ const ForgotOtpPage = () => {
       toast.success(res.data.message);
       return user;
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.response?.data?.message || "Too many requests");
     }
   };
 
