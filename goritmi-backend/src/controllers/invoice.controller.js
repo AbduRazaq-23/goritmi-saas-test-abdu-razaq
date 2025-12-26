@@ -222,6 +222,7 @@ const getInvoiceById = async (req, res) => {
   try {
     const { id } = req.params;
     const invoice = await Invoice.findById(id);
+
     return res.status(200).json({ invoice });
   } catch (error) {
     console.error("Invoice  error:", error);

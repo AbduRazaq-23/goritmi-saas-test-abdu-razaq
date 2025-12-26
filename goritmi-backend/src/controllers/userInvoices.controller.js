@@ -34,7 +34,7 @@ const getMyInvoiceById = async (req, res) => {
     const invoice = await Invoice.findOne({
       _id: id,
       userId,
-    }).populate("createdBy", "name email");
+    }).populate("createdBy userId", "name email contact");
 
     if (!invoice) {
       return res.status(404).json({ message: "Invoice not found" });
