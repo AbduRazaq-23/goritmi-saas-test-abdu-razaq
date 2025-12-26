@@ -200,7 +200,7 @@ const CreateInvoice = () => {
               type="text"
               inputMode="numeric"
               pattern="[0-9]*"
-              placeholder="Discount"
+              placeholder="Tax"
               value={form.tax === 0 ? "" : form.tax}
               onChange={(e) => {
                 const value = e.target.value;
