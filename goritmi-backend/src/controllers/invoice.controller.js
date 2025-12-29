@@ -349,7 +349,6 @@ const getInvoiceById = async (req, res) => {
       "userId",
       "email contact -_id"
     );
-    console.log(invoice);
 
     return res.status(200).json({ invoice });
   } catch (error) {
