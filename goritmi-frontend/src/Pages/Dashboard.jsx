@@ -10,7 +10,7 @@ import Summary from "../Components/Dashboard/AdminInvoice/Summary";
 import Invoice from "../Components/Dashboard/AdminInvoice/Invoice";
 import CreateInvoice from "../Components/Dashboard/AdminInvoice/CreateInvoice";
 import UserInvoices from "../Components/Dashboard/UserInvoice/UserInvoices";
-import UserInvoiceDetail from "../Components/Dashboard/UserInvoice/userInvoiceDetail";
+import UserInvoiceDetail from "../Components/Dashboard/UserInvoice/UserInvoiceDetail";
 import UpdateInvoice from "../Components/Dashboard/AdminInvoice/UpdateInvoice";
 
 const Dashboard = () => {
