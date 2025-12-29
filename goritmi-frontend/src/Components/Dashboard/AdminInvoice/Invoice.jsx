@@ -124,7 +124,9 @@ const Invoice = () => {
             <h1 className="text-2xl font-semibold">
               Invoice {invoice?.invoiceNumber}
             </h1>
-            <p className="text-gray-500">{invoice?.userId}</p>
+            <p className="text-gray-500">
+              Issued on {new Date(invoice.createdAt).toLocaleDateString()}
+            </p>
             <p className="text-red-400">{invoice?.cancelReason}</p>
           </div>
 
@@ -134,22 +136,27 @@ const Invoice = () => {
 
           {/* Actions */}
           {invoice?.status === "DUE" ? (
-            <div className="flex items-center gap-4">
-              <span className="font-medium">Status:</span>
+            <div>
+              <div className="flex items-center gap-4">
+                <span className="font-medium">Status:</span>
 
-              <select
-                value={invoice?.status || ""}
-                onChange={(e) => updateStatus(e.target.value)}
-                disabled={updating}
-                className={`px-4 py-2 rounded font-semibold border-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 ${
-                  invoice?.status === "DUE" &&
-                  "bg-orange-100 text-orange-800 border-orange-300"
-                }`}
-              >
-                <option value="DUE">DUE</option>
-                <option value="PAID">PAID</option>
-                <option value="CANCELLED">CANCELLED</option>
-              </select>
+                <select
+                  value={invoice?.status || ""}
+                  onChange={(e) => updateStatus(e.target.value)}
+                  disabled={updating}
+                  className={`px-4 py-2 rounded font-semibold border-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 ${
+                    invoice?.status === "DUE" &&
+                    "bg-orange-100 text-orange-800 border-orange-300"
+                  }`}
+                >
+                  <option value="DUE">DUE</option>
+                  <option value="PAID">PAID</option>
+                  <option value="CANCELLED">CANCELLED</option>
+                </select>
+              </div>
+              <p className="text-gray-500 text-sm md:text-end">
+                Due date {new Date(invoice.dueDate).toLocaleDateString()}
+              </p>
             </div>
           ) : (
             <span

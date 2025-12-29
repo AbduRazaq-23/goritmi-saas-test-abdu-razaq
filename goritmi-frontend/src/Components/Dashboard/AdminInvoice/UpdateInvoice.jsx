@@ -92,7 +92,7 @@ const UpdateInvoice = () => {
   return (
     <>
       <FaArrowLeft
-        onClick={() => navigate(`/dashboard/admin/invoice/${id}`)}
+        onClick={() => navigate(`/dashboard/admin/invoices/${id}`)}
         className=" text-blue-600 underline cursor-pointer"
       />
       <div className="p-6 max-w-5xl mx-auto">
