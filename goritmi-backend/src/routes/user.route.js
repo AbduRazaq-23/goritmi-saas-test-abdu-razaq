@@ -32,9 +32,7 @@ userRoute.route("/get-all-users").get(verifyUser, adminOnly, getAllUser);
 
 userRoute.route("/delete-user/:id").delete(verifyUser, adminOnly, deleteUser);
 
-userRoute
-  .route("/update-profile")
-  .patch(validateMiddleware(updateSchema), verifyUser, updateProfile);
+userRoute.route("/update-profile").patch(verifyUser, updateProfile);
 
 userRoute.route("/get-profile").get(verifyUser, getProfile);
 

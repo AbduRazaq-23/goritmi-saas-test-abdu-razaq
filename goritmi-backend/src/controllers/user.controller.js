@@ -17,6 +17,8 @@ const getProfile = async (req, res) => {
         name: req.user.name,
         email: req.user.email,
         role: req.user.role,
+        contact: req.user.contact,
+        location: req.user.location,
       },
     });
   } catch (error) {
@@ -33,7 +35,7 @@ const updateProfile = async (req, res) => {
     const { name, contact, location } = req.body;
 
     // VALIDATE BODY FIELD
-    if (!name || !contact || !location) {
+    if (!name || !contact) {
       return res.status(400).json({ message: "all field are required" });
     }
 
