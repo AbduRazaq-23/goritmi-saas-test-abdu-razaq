@@ -345,7 +345,11 @@ const getInvoiceSummary = async (req, res) => {
 const getInvoiceById = async (req, res) => {
   try {
     const { id } = req.params;
-    const invoice = await Invoice.findById(id);
+    const invoice = await Invoice.findById(id).populate(
+      "userId",
+      "email contact -_id"
+    );
+    console.log(invoice);
 
     return res.status(200).json({ invoice });
   } catch (error) {
