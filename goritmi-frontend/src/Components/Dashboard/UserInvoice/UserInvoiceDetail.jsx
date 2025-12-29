@@ -101,9 +101,11 @@ const UserInvoiceDetail = () => {
             >
               {invoice.status}
             </span>
-            <p className="text-gray-500">
-              {new Date(invoice.dueDate).toLocaleDateString()}
-            </p>
+            {invoice.status === "DUE" && (
+              <p className="text-gray-500">
+                {new Date(invoice.dueDate).toLocaleDateString()}
+              </p>
+            )}
           </div>
         </div>
 
