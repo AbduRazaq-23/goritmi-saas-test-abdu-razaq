@@ -308,6 +308,8 @@ const login = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        contact: user.contact,
+        location: user.location,
       },
     });
   } catch (error) {
