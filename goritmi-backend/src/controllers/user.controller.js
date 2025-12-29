@@ -30,32 +30,39 @@ const getProfile = async (req, res) => {
 // ===============================
 const updateProfile = async (req, res) => {
   try {
-    const { name, email } = req.body;
+    const { name, contact, location } = req.body;
 
-    if (!name || !email) {
+    // VALIDATE BODY FIELD
+    if (!name || !contact || !location) {
       return res.status(400).json({ message: "all field are required" });
     }
+
+    // CHECK IS USER
     if (!req.user) {
       return res.status(401).json({ message: "unauthorized request" });
     }
 
+    // UPDATE DETAILS IN DB
     const user = await User.findByIdAndUpdate(
       req.user._id,
       {
         $set: {
           name,
-          email,
+          contact,
+          location,
         },
       },
       { new: true }
     );
+
     if (!user) {
       return res.status(400).json({ message: "unauthorized request" });
     }
+
+    // RESPONSE
     return res.status(200).json({ message: "updated successfully", user });
   } catch (error) {
-    console.log("update error", error);
-    return res.status(500).json({ message: "server error" });
+    return res.status(500).json({ message: error.message });
   }
 };
 

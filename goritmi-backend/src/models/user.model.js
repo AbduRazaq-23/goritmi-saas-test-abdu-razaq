@@ -55,6 +55,12 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    contact: {
+      type: Number,
+    },
+    location: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
