@@ -75,6 +75,87 @@ const createInvoice = async (req, res) => {
 };
 
 // ===========================================
+//  UPDATE INVOICE DETAILS ONLY DUE
+// ===========================================
+const updateInvoice = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { items, tax = 0, discount = 0, dueDate, notes } = req.body;
+
+    // 1️ Find existing invoice
+    const invoice = await Invoice.findById(id);
+    if (!invoice) {
+      return res.status(404).json({ message: "Invoice not found" });
+    }
+    if (!invoice.status) return;
+
+    // If invoice paid or cancelled can't update
+    if (invoice.status === "PAID") {
+      return res.status(400).json("only due can be update");
+    }
+
+    // 2️ Validate items if provided
+    let calculatedItems = invoice.items;
+    let subTotal = invoice.subTotal;
+
+    if (items && Array.isArray(items) && items.length > 0) {
+      subTotal = 0;
+
+      calculatedItems = items.map((item) => {
+        if (!item.description || item.qty <= 0 || item.unitPrice < 0) {
+          return res.status(400).json({ message: "Invalid invoice item data" });
+        }
+
+        const lineTotal = item.qty * item.unitPrice;
+        subTotal += lineTotal;
+
+        return {
+          description: item.description,
+          qty: item.qty,
+          unitPrice: item.unitPrice,
+          lineTotal,
+        };
+      });
+    }
+
+    // 3️ Recalculate totals (ONLY if needed)
+    const updatedTax = tax ?? invoice.tax;
+    const updatedDiscount = discount ?? invoice.discount;
+
+    const totalAmount = subTotal + updatedTax - updatedDiscount;
+
+    if (totalAmount < 0) {
+      return res
+        .status(400)
+        .json({ message: "Total amount cannot be negative" });
+    }
+
+    // 4️ Update allowed fields ONLY
+    invoice.items = calculatedItems;
+    invoice.subTotal = subTotal;
+    invoice.tax = updatedTax;
+    invoice.discount = updatedDiscount;
+    invoice.totalAmount = totalAmount;
+    invoice.dueDate = dueDate ?? invoice.dueDate;
+    invoice.notes = notes ?? invoice.notes;
+
+    await invoice.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Invoice updated successfully",
+      invoice,
+    });
+  } catch (error) {
+    console.error("Update invoice error:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Server error",
+    });
+  }
+};
+
+// ===========================================
 //  UPDATE INVOICE STATUS
 // ===========================================
 
@@ -217,18 +298,6 @@ const getAdminInvoices = async (req, res) => {
 // ===========================================
 //  GET INVOICE SUMMARY
 // ===========================================
-
-const getInvoiceById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const invoice = await Invoice.findById(id);
-
-    return res.status(200).json({ invoice });
-  } catch (error) {
-    console.error("Invoice  error:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
 const getInvoiceSummary = async (req, res) => {
   try {
     const summary = await Invoice.aggregate([
@@ -270,8 +339,24 @@ const getInvoiceSummary = async (req, res) => {
   }
 };
 
+// ===========================================
+//  GET INVOICE BY ID
+// ===========================================
+const getInvoiceById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const invoice = await Invoice.findById(id);
+
+    return res.status(200).json({ invoice });
+  } catch (error) {
+    console.error("Invoice  error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 export {
   createInvoice,
+  updateInvoice,
   updateInvoiceStatus,
   getAdminInvoices,
   getInvoiceSummary,

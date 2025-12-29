@@ -11,6 +11,7 @@ import Invoice from "../Components/Dashboard/AdminInvoice/Invoice";
 import CreateInvoice from "../Components/Dashboard/AdminInvoice/CreateInvoice";
 import UserInvoices from "../Components/Dashboard/UserInvoice/UserInvoices";
 import UserInvoiceDetail from "../Components/Dashboard/UserInvoice/userInvoiceDetail";
+import UpdateInvoice from "../Components/Dashboard/AdminInvoice/UpdateInvoice";
 
 const Dashboard = () => {
   return (
@@ -30,7 +31,11 @@ const Dashboard = () => {
               {/* admin invoices  */}
               <Route path="admin/all-users" element={<GetAllUser />} />
               <Route path="admin/invoices" element={<Summary />} />
-              <Route path="admin/invoice/:id" element={<Invoice />} />
+              <Route
+                path="admin/invoices/update/:id"
+                element={<UpdateInvoice />}
+              />
+              <Route path="admin/invoices/:id" element={<Invoice />} />
               <Route path="admin/invoices/create" element={<CreateInvoice />} />
               // Add more protected routes here
             </Routes>

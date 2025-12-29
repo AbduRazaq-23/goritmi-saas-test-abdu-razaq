@@ -145,7 +145,7 @@ const InvoiceList = () => {
                     {new Date(inv.createdAt).toLocaleDateString()}
                   </td>
                   <td className="p-3">
-                    <Link to={`/dashboard/admin/invoice/${inv._id}`}>
+                    <Link to={`/dashboard/admin/invoices/${inv._id}`}>
                       <button className="text-blue-600 hover:underline">
                         View
                       </button>
@@ -204,7 +204,7 @@ const InvoiceList = () => {
                 {new Date(inv.createdAt).toLocaleDateString()}
               </p>
 
-              <Link to={`/dashboard/admin/invoice/${inv._id}`}>
+              <Link to={`/dashboard/admin/invoices/${inv._id}`}>
                 <button className="w-full text-center text-blue-600 font-medium border border-gray-600 rounded py-2 hover:bg-gray-50">
                   View
                 </button>

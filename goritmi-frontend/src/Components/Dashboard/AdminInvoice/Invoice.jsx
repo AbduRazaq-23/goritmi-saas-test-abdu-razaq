@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import gLogo from "../../../assets/g-logo.png";
 import { IoIosPrint } from "react-icons/io";
 import { FaArrowLeft } from "react-icons/fa";
+import { GrUpdate } from "react-icons/gr";
 
 const Invoice = () => {
   const printRef = useRef();
@@ -83,13 +84,27 @@ const Invoice = () => {
           className=" text-blue-600 underline cursor-pointer"
         />
 
-        {/* PRINT BUTTON */}
-        <IoIosPrint
-          onClick={handlePrint}
-          disabled={!invoice}
-          size={25}
-          className="hover:scale-110 hover:text-blue-600 cursor-pointer"
-        />
+        <div className="flex items-center gap-2">
+          {/* UPDATE BUTTON  */}
+          {invoice.status === "DUE" && (
+            <div
+              onClick={() => navigate(`/dashboard/admin/invoices/update/${id}`)}
+              className="flex items-center cursor-pointer gap-2 border border-gray-700 rounded-md p-1 text-sm font-semibold hover:scale-105 hover:text-blue-600 "
+            >
+              Update
+              <GrUpdate />
+            </div>
+          )}
+
+          {/* PRINT BUTTON */}
+          <div
+            onClick={handlePrint}
+            className="flex items-center cursor-pointer gap-2 border border-gray-700 rounded-md p-1 text-sm font-semibold hover:scale-105 hover:text-blue-600 "
+          >
+            Print
+            <IoIosPrint disabled={!invoice} />
+          </div>
+        </div>
       </div>
       <div ref={printRef} className="p-6 max-w-4xl mx-auto">
         {/* Logo & Name  */}

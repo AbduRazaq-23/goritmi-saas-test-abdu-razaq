@@ -6,12 +6,16 @@ import {
   getAdminInvoices,
   getInvoiceById,
   getInvoiceSummary,
+  updateInvoice,
   updateInvoiceStatus,
 } from "../controllers/invoice.controller.js";
 import adminOnly from "../middlewares/isAdmin.middleware.js";
 import verifyUser from "../middlewares/auth.middleware.js";
 
 invoiceRoute.route("/invoices").post(verifyUser, adminOnly, createInvoice);
+invoiceRoute
+  .route("/invoices/update/:id")
+  .patch(verifyUser, adminOnly, updateInvoice);
 invoiceRoute
   .route("/invoices/:id/status")
   .patch(verifyUser, adminOnly, updateInvoiceStatus);
