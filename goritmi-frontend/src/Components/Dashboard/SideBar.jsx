@@ -32,7 +32,7 @@ const SideBar = () => {
   ];
 
   const isAdmin = user?.role === "admin";
-  const filterNav = isAdmin ? nav : nav.slice(0, -1);
+  const filterNav = isAdmin ? nav : nav.slice(0, -2);
 
   return (
     <aside
