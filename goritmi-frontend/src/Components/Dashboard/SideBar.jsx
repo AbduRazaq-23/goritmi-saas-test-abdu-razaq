@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FaHome, FaUser, FaUsers, FaSignOutAlt, FaBars } from "react-icons/fa";
 import { FaFileInvoiceDollar } from "react-icons/fa6";
+import { CgProfile } from "react-icons/cg";
 
 import { useAuth } from "../../context/AuthContext";
 
@@ -22,6 +23,11 @@ const SideBar = () => {
       icon: <FaFileInvoiceDollar />,
     },
     { path: "/dashboard/profile", label: "Profile", icon: <FaUser /> },
+    {
+      path: "/dashboard/admin/business/profile",
+      label: "Business Profile",
+      icon: <CgProfile />,
+    },
     { path: "/dashboard/admin/all-users", label: "Users", icon: <FaUsers /> },
   ];
 

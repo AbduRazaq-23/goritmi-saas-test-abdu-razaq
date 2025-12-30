@@ -9,6 +9,7 @@ import authRoute from "./src/routes/auth.route.js";
 import userRoute from "./src/routes/user.route.js";
 import invoiceRoute from "./src/routes/invoice.route.js";
 import userInvoiceRoute from "./src/routes/userInvoice.route.js";
+import businessRoute from "./src/routes/business.route.js";
 
 app.use(
   cors({
@@ -28,6 +29,7 @@ app.use("/api/auth", authRoute);
 app.use("/api/user", userRoute);
 app.use("/api/admin", invoiceRoute);
 app.use("/api/user/invoices", userInvoiceRoute);
+app.use("/api/business/profile", businessRoute);
 
 connectDB()
   .then(() => {
