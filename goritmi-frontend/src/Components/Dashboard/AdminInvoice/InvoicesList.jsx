@@ -51,6 +51,27 @@ const InvoiceList = () => {
     fetchInvoices();
   }, [fetchInvoices]);
 
+  // SELECT FUNCTIONALITY
+  const [selectedIds, setSelectedIds] = useState([]);
+
+  const isAllSelected =
+    invoices.length > 0 && selectedIds.length === invoices.length;
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(invoices.map((inv) => inv._id));
+    }
+  };
+
+  const toggleSelectOne = (id) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  // RETURN
   return (
     <div className="mt-2">
       <div className="flex flex-col md:flex-row justify-between items-center mb-6">
@@ -93,12 +114,21 @@ const InvoiceList = () => {
         </select>
       </div>
 
-      {/* 📋 Table */}
-      {/* 📋 Desktop Table */}
+      {/*  Desktop Table */}
       <div className="hidden md:block min-h-[350px]">
         <table className="w-full border-collapse bg-white shadow rounded min-h-[200px]">
           <thead className="bg-gray-100">
             <tr>
+              <th className="p-3 ">
+                <div className="flex justify-start items-center ">
+                  <input
+                    type="checkbox"
+                    checked={isAllSelected}
+                    onChange={toggleSelectAll}
+                  />
+                </div>
+              </th>
+
               <th className="p-3 text-left">Invoice No</th>
               <th className="p-3 text-left">User</th>
               <th className="p-3 text-left">Amount</th>
@@ -124,6 +154,13 @@ const InvoiceList = () => {
             ) : (
               invoices.map((inv) => (
                 <tr key={inv._id} className="border-t">
+                  <td className="p-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.includes(inv._id)}
+                      onChange={() => toggleSelectOne(inv._id)}
+                    />
+                  </td>
                   <td className="p-3">{inv.invoiceNumber}</td>
                   <td className="p-3">{inv.userId?.email}</td>
                   <td className="p-3">PKR {inv.totalAmount}</td>
