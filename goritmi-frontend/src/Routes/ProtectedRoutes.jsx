@@ -25,7 +25,7 @@ export const AdminRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (!user.isAdmin) {
+  if (!user.role === "admin") {
     // Logged in but not admin → redirect to dashboard or home
     return <Navigate to="/dashboard" replace />;
   }

@@ -12,8 +12,12 @@ const SideBar = () => {
   const loc = useLocation();
 
   const nav = [
-    { path: "/dashboard", label: "Overview", icon: <FaHome /> },
-    // dynamic path for admin & user
+    {
+      path: "/dashboard",
+      label: "Overview",
+      icon: <FaHome />,
+      roles: ["admin", "user"],
+    },
     {
       path:
         user?.role === "admin"
@@ -21,18 +25,29 @@ const SideBar = () => {
           : "/dashboard/user/invoices",
       label: "Invoices",
       icon: <FaFileInvoiceDollar />,
+      roles: ["admin", "user"],
     },
-    { path: "/dashboard/profile", label: "Profile", icon: <FaUser /> },
+    {
+      path: "/dashboard/profile",
+      label: "Profile",
+      icon: <FaUser />,
+      roles: ["admin", "user"],
+    },
     {
       path: "/dashboard/admin/business/profile",
       label: "Business Profile",
       icon: <CgProfile />,
+      roles: ["admin"],
     },
-    { path: "/dashboard/admin/all-users", label: "Users", icon: <FaUsers /> },
+    {
+      path: "/dashboard/admin/all-users",
+      label: "Users",
+      icon: <FaUsers />,
+      roles: ["admin"],
+    },
   ];
 
-  const isAdmin = user?.role === "admin";
-  const filterNav = isAdmin ? nav : nav.slice(0, -2);
+  const filterNav = nav.filter((n) => n.roles.includes(user?.role));
 
   return (
     <aside

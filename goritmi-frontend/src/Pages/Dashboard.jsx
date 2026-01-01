@@ -5,7 +5,6 @@ import AnalyticsCards from "../Components/Dashboard/AnalyticsCards";
 import Profile from "../Components/Dashboard/Profile";
 import { Routes, Route } from "react-router-dom";
 import GetAllUser from "../Components/Dashboard/GetAllUser";
-
 import Summary from "../Components/Dashboard/AdminInvoice/Summary";
 import Invoice from "../Components/Dashboard/AdminInvoice/Invoice";
 import CreateInvoice from "../Components/Dashboard/AdminInvoice/CreateInvoice";
@@ -13,6 +12,8 @@ import UserInvoices from "../Components/Dashboard/UserInvoice/UserInvoices";
 import UserInvoiceDetail from "../Components/Dashboard/UserInvoice/UserInvoiceDetail";
 import UpdateInvoice from "../Components/Dashboard/AdminInvoice/UpdateInvoice";
 import BusinessProfile from "../Components/Dashboard/BusinessProfile";
+
+import { AdminRoute } from "../Routes/ProtectedRoutes";
 
 const Dashboard = () => {
   return (
@@ -24,25 +25,63 @@ const Dashboard = () => {
         <main className="p-6 min-w-0">
           <div>
             <Routes>
-              <Route path="/" element={<AnalyticsCards />} />
+              {/* DASHBOARD HOME  */}
+              <Route index element={<AnalyticsCards />} />
+              {/* PROFILE  */}
               <Route path="profile" element={<Profile />} />
-              {/* user invoices  */}
+              {/* USER */}
               <Route path="user/invoices" element={<UserInvoices />} />
               <Route path="user/invoices/:id" element={<UserInvoiceDetail />} />
-              {/* admin invoices  */}
-              <Route path="admin/all-users" element={<GetAllUser />} />
-              <Route path="admin/invoices" element={<Summary />} />
+              {/* ADMIN   */}
+              <Route
+                path="admin/all-users"
+                element={
+                  <AdminRoute>
+                    <GetAllUser />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="admin/invoices"
+                element={
+                  <AdminRoute>
+                    <Summary />
+                  </AdminRoute>
+                }
+              />
               <Route
                 path="admin/invoices/update/:id"
-                element={<UpdateInvoice />}
+                element={
+                  <AdminRoute>
+                    <UpdateInvoice />
+                  </AdminRoute>
+                }
               />
-              <Route path="admin/invoices/:id" element={<Invoice />} />
-              <Route path="admin/invoices/create" element={<CreateInvoice />} />
+              <Route
+                path="admin/invoices/:id"
+                element={
+                  <AdminRoute>
+                    <Invoice />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="admin/invoices/create"
+                element={
+                  <AdminRoute>
+                    <CreateInvoice />
+                  </AdminRoute>
+                }
+              />
               <Route
                 path="admin/business/profile"
-                element={<BusinessProfile />}
+                element={
+                  <AdminRoute>
+                    <BusinessProfile />
+                  </AdminRoute>
+                }
               />
-              // Add more protected routes here
+              {/* Add more protected routes here */}
             </Routes>
           </div>
         </main>
