@@ -1,22 +1,17 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 
 const GetAllUser = () => {
-  const [user, setUser] = useState();
+  const [users, setUsers] = useState();
+  const { getUsers } = useAuth();
 
   // get all user here
-
   useEffect(() => {
-    const getAllUser = async () => {
-      const res = await axios.get(
-        "http://localhost:5000/api/user/get-all-users",
-        {
-          withCredentials: true,
-        }
-      );
-      setUser(res.data.users);
-    };
-    getAllUser();
+    (async () => {
+      const Users = await getUsers();
+      setUsers(Users);
+    })();
   }, []);
 
   // delete user
@@ -24,7 +19,7 @@ const GetAllUser = () => {
     try {
       await axios.delete("http://localhost:5000/api/user/delete-user/" + id);
 
-      setUser((pre) => pre.filter((u) => u._id !== id));
+      setUsers((pre) => pre.filter((u) => u._id !== id));
     } catch (error) {
       throw error;
     }
@@ -36,7 +31,7 @@ const GetAllUser = () => {
         "http://localhost:5000/api/user/toggle-status/" + id
       );
       // to update ui button
-      setUser((pre) =>
+      setUsers((pre) =>
         pre.map((u) =>
           u._id === id ? { ...u, isActive: res.data.user.isActive } : u
         )
@@ -48,7 +43,7 @@ const GetAllUser = () => {
 
   return (
     <div className="w-full  ">
-      {user?.map((u) => {
+      {users?.map((u) => {
         return (
           <div
             key={u._id}
