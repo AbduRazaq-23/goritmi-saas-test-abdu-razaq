@@ -15,6 +15,7 @@ import { motion } from "framer-motion";
 
 const AnalyticsCards = () => {
   const [overview, setOverview] = useState(null);
+  const [users, setUsers] = useState(null);
 
   // Dummy data fallback
   const dummyLine = [
@@ -24,6 +25,12 @@ const AnalyticsCards = () => {
     { name: "Apr", users: 280 },
     { name: "May", users: 420 },
     { name: "Jun", users: 520 },
+    // { name: "Jul", users: 520 },
+    // { name: "Aug", users: 520 },
+    // { name: "Sep", users: 520 },
+    // { name: "Oct", users: 520 },
+    // { name: "Nov", users: 520 },
+    // { name: "Dec", users: 520 },
   ];
 
   const dummyBar = [
@@ -37,25 +44,25 @@ const AnalyticsCards = () => {
     setOverview({
       line: dummyLine,
       bar: dummyBar,
-      stats: { users: 1200, revenue: 9800, newUsers: 54 },
+      stats: { users, revenue: 9800, newUsers: users },
     });
   }, []);
 
   const stats = [
     {
       name: "Total User",
-      val: 1200,
-      per: +5.4,
+      val: 3,
+      per: 100,
     },
     {
       name: "Revenue",
       val: 9800,
-      per: +2.1,
+      per: 100,
     },
     {
       name: "New Users",
-      val: 54,
-      per: -1.2,
+      val: 3,
+      per: 100,
     },
   ];
 
