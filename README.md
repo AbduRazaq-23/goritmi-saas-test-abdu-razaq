@@ -41,7 +41,7 @@ Smooth animations using Framer Motion
 
 Register & Login (JWT)
 
-Secure password hashing (bcrypt)
+Secure password & Otp hashing (bcrypt)
 
 Store token via cookie
 
@@ -59,17 +59,20 @@ Sidebar (collapsible)
 
 Topbar with Name & avatar(name first letter)
 
-Analytics cards
+SideBar with Logo Menu Button, Owerview, Invoices, Profile, Admin(Business Profile, Users)
 
-Recharts line & bar charts
+Owerview => Analytics cards, Recharts line & bar charts
 
-Profile page (update name/email/password)
+Profile page => (update name/contact)
 
+===
 Admin-only area:
 
-Get All Users
+Business Profile page => (update logo/name/email/contact/address)
 
-Delete User
+Invoices => Summary Card , Search, Filter, Pagination, Invoices Table, => Create Invoice, action => invoice, status update, print
+
+Users => All users, Delete user, activate or deactive user
 
 # ===========================================
 
@@ -77,54 +80,31 @@ Delete User
 
 JWT Authentication
 
-Mongoose User Model
+Mongoose Model (userModel, invoiceModel, businessModel, invoiceStatusLogModel)
 
-Auth Controller
+Controller (auth, business, invoice, user, userInvoice)
 
-Email Verification using resend
+Email Verification using Nodemailler
 
 Protected Routes (verifyUser)
 
-Admin Middleware
+Middleware (Auth, isAdmin, multer, rateLimit, Validator)
 
-Validation Middleware (Joi)
+#Utills:
+auth Validator, generateInvoiceNo, generateOtp, generateToken, sendEmail, uploadOnCloudinary
 
 # ==========================================
 
 🛠 Tech Stack
+
 Frontend
 
-React.js
-
-Tailwind CSS
-
-Framer Motion
-
-Recharts
-
-React Router DOM
-
-Axios
+React.js, Tailwind CSS, Framer Motion, Recharts, React Router DOM, Axios
 
 Backend
 
-Node.js
-
-Express.js
-
-MongoDB + Mongoose
-
-bcrypt
-
-JWT (jsonwebtoken)
-
-Cookie Parser
-
-Validation Middleware
-
-cors
-
-dotenv
+Node.js, Express.js, MongoDB + Mongoose, bcrypt, JWT (jsonwebtoken), Cookie Parser,
+Validation Middleware, cors, dotenv
 
 # ======================================
 
@@ -148,15 +128,24 @@ npm install
 
 =====================================
 
+#ENV
+
 PORT=5000
+MONGOOSE_URI=mongodb+srv
+JWT_SECRET=GORITMI
+JWT_EXPIRY=7D
 
-MONGOOSE_URI=your_mongo_connection_string
+SMTP_HOST=smtp.brevo.com
+SMTP_PORT=587
+SMTP_USER=9e25smtp-brevo.com
+SMTP_PASS=xsmtpsib233-ZgKOJwdkWHFRpYQO
+SMTP_EMAIL=irazaq@gmail.com
 
-JWT_SECRET=yourJWTsecret
+NODE_ENV === prod
 
-JWT_EXPIRE=7d
-
-CLIENT_URL=http://localhost:5173
+CLOUDINARY_CLOUD_NAME=dbcmz
+CLOUDINARY_API_KEY=18857
+CLOUDINARY_API_SECRET=9VuciHeM
 
 ====================================
 
@@ -181,38 +170,6 @@ Start frontend:
 npm run dev
 
 Frontend runs at: http://localhost:5173
-
-# ==========================================
-
-📁 Project Folder Structure
-
-# ==========================================
-
-🔐 Authentication API Documentation
-
-▶ Base URL http://localhost:5000/api/auth
-
-Endpoints Summary
-
-Method-------Endpoint--------------Auth----Admin----Description
-
-POST---------/register--------------❌-----❌------Register user
-
-POST---------/login-----------------❌-----❌------Login user
-
-GET----------/get-profile-----------✔------❌------Logged-in profile
-
-POST---------/logout----------------✔------❌------Logout
-
-PATCH--------/update-profile--------✔ -----❌-------Update name/email
-
-PATCH--------/update-password-------✔------❌------Update password
-
-GET----------/get-all-users---------✔------✔-------Admin: get all users
-
-DELETE-------/delete-user/:id-------✔------✔-------Admin: delete user
-
-👉 Full API Reference above.
 
 ==========================================================================
 
@@ -326,22 +283,6 @@ View invoice details
 
 Cannot modify invoices
 
-🧩 Project Structure
-backend/
-├── controllers/
-├── models/
-├── routes/
-├── middlewares/
-├── utils/
-├── app.js
-└── server.js
-
-frontend/
-├── pages/
-├── components/
-├── services/
-└── store/
-
 🔐 Authentication Flow (OTP)
 📝 Registration
 
@@ -401,57 +342,31 @@ POST /api/auth/login
 POST /api/auth/otp/verify
 POST /api/auth/otp/resend
 POST /api/auth/logout
+POST /api/auth/forgot-password
+POST /api/auth/resend/forgot/otp
+POST /api/auth/verify-otp
+POST /api/auth/change-password
 
 👨‍💼 Admin
 POST /api/admin/invoices
 PATCH /api/admin/invoices/:id/status
 GET /api/admin/invoices
 GET /api/admin/invoices/summary
+GET /api/admin/get-all-users
+DELETE /api/admin/delete-user/:id
+PATCH /api/admin//toggle-status/:id
 
 👤 User
 GET /api/user/invoices
 GET /api/user/invoices/:id
+PATCH /api/user/update-profile
+GET /api/user/get-profile
 
-⚙️ Environment Variables
-
-Create a .env file in backend/:
-
-PORT=5000
-MONGO_URI=mongodb://localhost:27017/goritmi
-JWT_SECRET=your_jwt_secret
-
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your_email@gmail.com
-SMTP_PASS=your_app_password
-
-⚠️ Do not commit .env
-
-🛠️ Installation & Run
-Backend
-cd backend
-npm install
-npm run dev
-
-Frontend
-cd frontend
-npm install
-npm start
-
-🧪 Test Credentials (Demo)
-Admin
-Email: admin@goritmi.com
-Password: Admin@123
-Role: admin
-
-User
-Email: user@goritmi.com
-Password: User@123
-Role: user
+OTP
 
 (OTP will be sent to email during login/register)
 
-📸 Demo Evidence
+📸 Evidence
 
 OTP email screenshots
 
