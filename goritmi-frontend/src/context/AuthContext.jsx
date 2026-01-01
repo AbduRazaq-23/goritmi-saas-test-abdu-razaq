@@ -211,7 +211,6 @@ export const AuthProvider = ({ children }) => {
         setUser,
         loading,
         err,
-        getProfile,
         getUsers,
         register,
         verifyEmail,
@@ -221,7 +220,6 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         getProfile,
-        isAuthenticated: !!user,
       }}
     >
       {children}
