@@ -79,7 +79,7 @@ const UpdateInvoice = () => {
         form
       );
       toast.success("updated successfully");
-      navigate(`/dashboard/admin/invoice/${id}`);
+      navigate(`/dashboard/admin/invoices/${id}`);
     } catch (err) {
       toast.error(err.response?.data || "Update failed");
     } finally {
