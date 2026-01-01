@@ -190,6 +190,20 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  //========================
+  // GET ALL USERS
+  //========================
+
+  const getUsers = async () => {
+    const res = await axios.get(
+      "http://localhost:5000/api/user/get-all-users",
+      {
+        withCredentials: true,
+      }
+    );
+    return res.data.users;
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -197,6 +211,8 @@ export const AuthProvider = ({ children }) => {
         setUser,
         loading,
         err,
+        getProfile,
+        getUsers,
         register,
         verifyEmail,
         sendOtp,
