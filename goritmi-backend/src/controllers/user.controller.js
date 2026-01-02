@@ -1,5 +1,7 @@
 import User from "../models/user.model.js";
 import Invoice from "../models/invoice.model.js";
+import { v2 as cloudinary } from "cloudinary";
+import uploadBufferToCloudinary from "../utills/uploadOnCloudinary.js";
 
 // ===============================
 // 📌 GET USER PROFILE
@@ -19,6 +21,7 @@ const getProfile = async (req, res) => {
         role: req.user.role,
         contact: req.user.contact,
         location: req.user.location,
+        logo: req.user.logo,
       },
     });
   } catch (error) {
