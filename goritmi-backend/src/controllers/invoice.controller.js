@@ -357,6 +357,30 @@ const getInvoiceById = async (req, res) => {
   }
 };
 
+// ===========================================
+//  DELETE INVOICES BY ID'S
+// ===========================================
+const bulkDeleteInvoices = async (req, res) => {
+  try {
+    const { ids } = req.body;
+
+    // Basic Validation
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ message: "No invoice IDs provided" });
+    }
+
+    // Delete Invoices By Id's
+    const delMany = await Invoice.deleteMany({ _id: { $in: ids } });
+
+    // Response
+    return res.status(200).json({
+      message: `${delMany.deletedCount} invoices deleted successfully`,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 export {
   createInvoice,
   updateInvoice,
@@ -364,4 +388,5 @@ export {
   getAdminInvoices,
   getInvoiceSummary,
   getInvoiceById,
+  bulkDeleteInvoices,
 };

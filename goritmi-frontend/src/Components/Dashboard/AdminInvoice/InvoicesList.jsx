@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import { MdDeleteOutline } from "react-icons/md";
+import { toast } from "react-toastify";
 
 const InvoiceList = () => {
   const navigate = useNavigate();
@@ -57,6 +59,7 @@ const InvoiceList = () => {
   const isAllSelected =
     invoices.length > 0 && selectedIds.length === invoices.length;
 
+  // Select all
   const toggleSelectAll = () => {
     if (isAllSelected) {
       setSelectedIds([]);
@@ -65,10 +68,39 @@ const InvoiceList = () => {
     }
   };
 
+  // Select one
   const toggleSelectOne = (id) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
+  };
+
+  // Delete Bulk
+  const deleteBulk = async (ids) => {
+    try {
+      // Confirm to delete
+      const confirm = window.confirm(
+        `Delete ${ids.length} ${ids.length > 1 ? "invoices" : "invoice"}?`
+      );
+      if (!confirm) return;
+
+      // api call
+      const res = await axios.delete(
+        "http://localhost:5000/api/admin/invoices/bulk-delete",
+        { data: { ids } }
+      );
+
+      toast.success(res?.data.message || "Bulk deleted");
+      setSelectedIds([]);
+
+      // update ui table
+      setInvoices((prev) =>
+        prev.filter((invoice) => !ids.includes(invoice._id))
+      );
+      console.log(ids.length);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Bulk delete failed");
+    }
   };
 
   // RETURN
@@ -87,31 +119,44 @@ const InvoiceList = () => {
       </div>
 
       {/* 🔍 Filters */}
-      <div className="flex flex-col md:flex-row gap-4 mb-4">
-        <input
-          type="text"
-          placeholder="Search invoice no / email"
-          value={search}
-          onChange={(e) => {
-            setPage(1);
-            setSearch(e.target.value);
-          }}
-          className="border p-2 rounded md:w-64"
-        />
+      <div className="flex justify-between items-center pr-5">
+        <div className="flex flex-col md:flex-row  gap-4 mb-4 ">
+          {/* search by email and invoice no  */}
+          <input
+            type="text"
+            placeholder="Search invoice no / email"
+            value={search}
+            onChange={(e) => {
+              setPage(1);
+              setSearch(e.target.value);
+            }}
+            className="border p-2 rounded md:w-64"
+          />
 
-        <select
-          value={status}
-          onChange={(e) => {
-            setPage(1);
-            setStatus(e.target.value);
-          }}
-          className=" border p-2 rounded"
+          {/* fileter by status  */}
+          <select
+            value={status}
+            onChange={(e) => {
+              setPage(1);
+              setStatus(e.target.value);
+            }}
+            className=" border p-2 rounded"
+          >
+            <option value="">All Status</option>
+            <option value="DUE">DUE</option>
+            <option value="PAID">PAID</option>
+            <option value="CANCELLED">CANCELLED</option>
+          </select>
+        </div>
+        {/* delete button  */}
+        <button
+          type="button"
+          onClick={() => deleteBulk(selectedIds)}
+          disabled={selectedIds.length === 0}
+          className="hidden md:block disabled:text-gray-400 disabled:cursor-not-allowed text-red-500 cursor-pointer hover:scale-105"
         >
-          <option value="">All Status</option>
-          <option value="DUE">DUE</option>
-          <option value="PAID">PAID</option>
-          <option value="CANCELLED">CANCELLED</option>
-        </select>
+          <MdDeleteOutline size={25} />
+        </button>
       </div>
 
       {/*  Desktop Table */}
