@@ -23,6 +23,10 @@ const userSchema = new Schema(
       minlength: 8,
       select: false,
     },
+    logo: {
+      url: String,
+      publicId: String,
+    },
     role: {
       type: String,
       emum: ["user", "admin"],

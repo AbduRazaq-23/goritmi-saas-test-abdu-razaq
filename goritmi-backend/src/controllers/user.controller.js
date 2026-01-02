@@ -133,4 +133,62 @@ const toggleStatusUser = async (req, res) => {
   }
 };
 
-export { getProfile, updateProfile, getAllUser, deleteUser, toggleStatusUser };
+//============================================
+// UPLOAD BUSINESS PROFILE LOGO
+//============================================
+
+const uploadLogo = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "File is required" });
+    }
+
+    // Upload on Cloudinary
+    const uploadLogo = await uploadBufferToCloudinary(
+      req.file.buffer,
+      "user logo"
+    );
+
+    if (!uploadLogo) {
+      return res.status(500).json({ message: "Error while uploading" });
+    }
+
+    // Find User Profile
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ message: "user not found" });
+    }
+
+    // Delete old Logo
+    if (user.logo?.publicId) {
+      await cloudinary.uploader.destroy(user.logo.publicId);
+    }
+
+    user.logo = {
+      url: uploadLogo.secure_url,
+      publicId: uploadLogo.public_id,
+    };
+
+    await user.save();
+
+    // Final response
+    return res
+      .status(201)
+      .json({ message: "logo upload successfully", logo: user.logo });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Upload failed",
+      error: error.message,
+    });
+  }
+};
+
+export {
+  getProfile,
+  updateProfile,
+  getAllUser,
+  deleteUser,
+  toggleStatusUser,
+  uploadLogo,
+};
