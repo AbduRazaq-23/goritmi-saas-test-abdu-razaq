@@ -52,19 +52,19 @@ const Profile = () => {
   return (
     <div className=" max-w-3xl mx-auto bg-white p-2 rounded-2xl shadow-2xl">
       {/* Logo  */}
-      <div className="w-full mb-5">
-        {isAdmin ? (
-          <img
-            src={gLogo}
-            alt="Grok logo"
-            width="200"
-            height="200"
-            loading="lazy"
-            className="m-auto"
-          />
-        ) : (
-          <h1 className="text-center font-bold text-2xl">User Profile</h1>
-        )}
+      <div className="w-full flex justify-around mb-5">
+        <img
+          src={gLogo}
+          alt="Grok logo"
+          width="200"
+          height="200"
+          loading="lazy"
+        />
+        <img
+          className="h-24 w-24 rounded-full"
+          src={user?.logo.url}
+          alt="profile"
+        />
       </div>
 
       <div className=" p-2 text-gray-800">
