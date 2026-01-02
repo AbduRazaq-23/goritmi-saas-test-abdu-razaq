@@ -70,7 +70,7 @@ Admin-only area:
 
 Business Profile page => (update logo/name/email/contact/address)
 
-Invoices => Summary Card , Search, Filter, Pagination, Invoices Table, => Create Invoice, action => invoice, status update, print
+Invoices => Summary Card , Search, Filter, Delete, Pagination, Invoices Table, => Create Invoice, action => invoice, status update, print
 
 Users => All users, Delete user, activate or deactive user
 
