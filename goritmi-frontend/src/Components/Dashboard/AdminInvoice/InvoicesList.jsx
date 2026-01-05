@@ -3,6 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { MdDeleteOutline } from "react-icons/md";
 import { toast } from "react-toastify";
+import { exportInvoicesToExcel } from "../../../utills/exportInvoicesToExcel";
+import { exportInvoicesToPdf } from "../../../utills/exportInvoicesToPDF";
 
 const InvoiceList = () => {
   const navigate = useNavigate();
@@ -75,6 +77,11 @@ const InvoiceList = () => {
     );
   };
 
+  // Filter Select Invoices to export
+  const selectedInvoices = invoices.filter((inv) =>
+    selectedIds.includes(inv._id)
+  );
+
   // Delete Bulk
   const deleteBulk = async (ids) => {
     try {
@@ -118,7 +125,7 @@ const InvoiceList = () => {
         </button>
       </div>
 
-      {/* 🔍 Filters */}
+      {/* 🔍 Filters Print Delete */}
       <div className="flex justify-between items-center pr-5">
         <div className="flex flex-col md:flex-row  gap-4 mb-4 ">
           {/* search by email and invoice no  */}
@@ -148,15 +155,45 @@ const InvoiceList = () => {
             <option value="CANCELLED">CANCELLED</option>
           </select>
         </div>
-        {/* delete button  */}
-        <button
-          type="button"
-          onClick={() => deleteBulk(selectedIds)}
-          disabled={selectedIds.length === 0}
-          className="hidden md:block disabled:text-gray-400 disabled:cursor-not-allowed text-red-500 cursor-pointer hover:scale-105"
-        >
-          <MdDeleteOutline size={25} />
-        </button>
+        <div className="flex items-center gap-2">
+          {/* export table  */}
+          <select
+            className="border rounded"
+            name="export"
+            id="export"
+            onChange={(e) => {
+              const value = e.target.value;
+              const data = selectedIds.length ? selectedInvoices : invoices;
+
+              switch (value) {
+                case "excel":
+                  exportInvoicesToExcel(data);
+                  break;
+                case "pdf":
+                  exportInvoicesToPdf(data);
+                  break;
+                default:
+                  break;
+              }
+
+              e.target.value = "";
+            }}
+          >
+            <option value="">Export</option>
+            <option value="excel">Excel</option>
+            <option value="pdf">Pdf</option>
+          </select>
+
+          {/* delete button  */}
+          <button
+            type="button"
+            onClick={() => deleteBulk(selectedIds)}
+            disabled={selectedIds.length === 0}
+            className="hidden md:block disabled:text-gray-400 disabled:cursor-not-allowed text-red-500 cursor-pointer hover:scale-105"
+          >
+            <MdDeleteOutline size={28} />
+          </button>
+        </div>
       </div>
 
       {/*  Desktop Table */}
