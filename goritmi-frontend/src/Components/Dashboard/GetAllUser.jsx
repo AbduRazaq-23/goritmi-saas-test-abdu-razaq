@@ -50,9 +50,16 @@ const GetAllUser = () => {
             className="flex flex-col  my-2 p-5 bg-white rounded-md shadow-md"
           >
             <div className="md:flex justify-between items-center">
-              <div>
-                <h1 className="font-bold">{u.name}</h1>
-                <p className="text-gray-700">{u.email}</p>
+              <div className="flex flex-col md:flex-row md:items-center gap-4">
+                <img
+                  className="w-14 h-14 rounded-full"
+                  src={u?.logo?.url}
+                  alt=""
+                />
+                <div>
+                  <h1 className="font-bold">{u.name}</h1>
+                  <p className="text-gray-700">{u.email}</p>
+                </div>
               </div>
               {u.role === "admin" && (
                 <p className="text-gray-700 font-bold">{u.role}</p>
