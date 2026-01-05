@@ -45,6 +45,6 @@ userRoute.route("/get-profile").get(verifyUser, getProfile);
 // USER LOGO UPLOAD
 userRoute
   .route("/upload/logo")
-  .post(verifyUser, upload.single("logo"), uploadLogo);
+  .patch(verifyUser, upload.single("logo"), uploadLogo);
 
 export default userRoute;
