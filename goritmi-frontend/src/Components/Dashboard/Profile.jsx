@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { CiEdit } from "react-icons/ci";
 import { FaSave } from "react-icons/fa";
-import gLogo from "../../assets/g-logo.png";
 
 const Profile = () => {
   const { user, setUser } = useAuth();
@@ -17,6 +16,41 @@ const Profile = () => {
     contact: "",
     location: "",
   });
+
+  // ======= HANDLE LOGO =====
+  const [preview, setPreview] = useState(user?.logo.url);
+  const [logo, setLogo] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const handleClick = () => fileInputRef.current.click();
+
+  // select file
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLogo(file);
+    setPreview(URL.createObjectURL(file));
+  };
+
+  // update logo
+  const updateLogo = async () => {
+    if (!logo) return;
+
+    const data = new FormData();
+    data.append("logo", logo);
+    try {
+      const res = await axios.patch(
+        "http://localhost:5000/api/user/upload/logo",
+        data
+      );
+      toast.success(res?.data.message, { autoClose: 1000 });
+      setUser(res.data.user);
+      setPreview(res.data.user.logo.url);
+      setLogo(null);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "failled to upload");
+    }
+  };
 
   useEffect(() => {
     if (user)
@@ -53,18 +87,34 @@ const Profile = () => {
     <div className=" max-w-3xl mx-auto bg-white p-2 rounded-2xl shadow-2xl">
       {/* Logo  */}
       <div className="w-full flex justify-around mb-5">
-        <img
-          src={gLogo}
-          alt="Grok logo"
-          width="200"
-          height="200"
-          loading="lazy"
-        />
-        <img
-          className="h-24 w-24 rounded-full"
-          src={user?.logo.url}
-          alt="profile"
-        />
+        <div className="relative w-24 h-24 group flex flex-col">
+          <img
+            className="h-24 w-24 rounded-full object-cover"
+            src={preview}
+            alt="profile"
+          />
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            onChange={handleFileSelect}
+          />
+          {!logo ? (
+            <button
+              onClick={handleClick}
+              className="absolute inset-0 flex items-center justify-center text-gray-200 text-2xl font-bold cursor-pointer    opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              +
+            </button>
+          ) : (
+            <button
+              className="text-gray-600 border border-gray-300 rounded "
+              onClick={updateLogo}
+            >
+              upload
+            </button>
+          )}
+        </div>
       </div>
 
       <div className=" p-2 text-gray-800">
