@@ -16,7 +16,7 @@ const SideBar = () => {
       path: "/dashboard",
       label: "Overview",
       icon: <FaHome />,
-      roles: ["admin", "user"],
+      roles: ["admin"],
     },
     {
       path:
