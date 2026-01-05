@@ -155,7 +155,7 @@ const InvoiceList = () => {
             <option value="CANCELLED">CANCELLED</option>
           </select>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-2">
           {/* export table  */}
           <select
             className="border rounded"
