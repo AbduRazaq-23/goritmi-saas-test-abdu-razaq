@@ -176,9 +176,7 @@ const uploadLogo = async (req, res) => {
     await user.save();
 
     // Final response
-    return res
-      .status(201)
-      .json({ message: "logo upload successfully", logo: user.logo });
+    return res.status(201).json({ message: "logo upload successfully", user });
   } catch (error) {
     return res.status(500).json({
       message: "Upload failed",
