@@ -12,10 +12,12 @@ import {
   Legend,
 } from "recharts";
 import { motion } from "framer-motion";
+import { useAuth } from "../../context/AuthContext";
 
 const AnalyticsCards = () => {
   const [overview, setOverview] = useState(null);
-  const [users, setUsers] = useState(null);
+  const { getUsers } = useAuth();
+  const [users, setUsers] = useState();
 
   // Dummy data fallback
   const dummyLine = [
@@ -48,10 +50,19 @@ const AnalyticsCards = () => {
     });
   }, []);
 
+  // get length of users
+  useEffect(() => {
+    (async () => {
+      const res = await getUsers();
+      console.log(res);
+      setUsers(res?.length);
+    })();
+  }, []);
+
   const stats = [
     {
       name: "Total User",
-      val: 3,
+      val: users,
       per: 100,
     },
     {
