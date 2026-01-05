@@ -79,7 +79,7 @@ const TopBar = () => {
           >
             <img
               className="h-10 w-10 rounded-full"
-              src={user?.logo.url}
+              src={user?.logo?.url}
               alt="logo"
             />
           </div>
