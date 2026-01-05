@@ -37,8 +37,14 @@ const Summary = () => {
 
   return (
     <div className="mt- p-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* Receivable */}
+        <div className="bg-green-100 p-5 rounded-lg shadow">
+          <p className="text-sm text-gray-600">Grand Total</p>
+          <h2 className="text-2xl font-bold text-green-700">
+            PKR {summary.grandTotal}
+          </h2>
+        </div>
         <div className="bg-yellow-100 p-5 rounded-lg shadow">
           <p className="text-sm text-gray-600">Total Receivable</p>
           <h2 className="text-2xl font-bold text-yellow-700">
