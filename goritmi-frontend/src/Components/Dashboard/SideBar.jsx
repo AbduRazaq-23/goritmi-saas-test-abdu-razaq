@@ -8,7 +8,7 @@ import { useAuth } from "../../context/AuthContext";
 
 const SideBar = () => {
   const { logout, user } = useAuth();
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
   const loc = useLocation();
 
   const nav = [

@@ -1,6 +1,12 @@
 import Router from "express";
 const invoiceRoute = Router();
 
+import validateMiddleware from "../middlewares/validate.middleware.js";
+
+import {
+  invoiceSchema,
+  UpdateInvoiceSchema,
+} from "../utills/auth.validdator.js";
 // Import admin invoice controllers
 import {
   bulkDeleteInvoices,
@@ -19,12 +25,24 @@ import adminOnly from "../middlewares/isAdmin.middleware.js";
 import verifyUser from "../middlewares/auth.middleware.js";
 
 // Create Invoices only admin
-invoiceRoute.route("/invoices").post(verifyUser, adminOnly, createInvoice);
+invoiceRoute
+  .route("/invoices")
+  .post(
+    validateMiddleware(invoiceSchema),
+    verifyUser,
+    adminOnly,
+    createInvoice
+  );
 
 // Update Invoices only admin
 invoiceRoute
   .route("/invoices/update/:id")
-  .patch(verifyUser, adminOnly, updateInvoice);
+  .patch(
+    validateMiddleware(UpdateInvoiceSchema),
+    verifyUser,
+    adminOnly,
+    updateInvoice
+  );
 
 // Update Invoice status only admin
 invoiceRoute

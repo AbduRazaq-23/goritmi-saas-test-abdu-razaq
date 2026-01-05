@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Select from "react-select";
 import { FaArrowLeft } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 const CreateInvoice = () => {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ const CreateInvoice = () => {
 
   const [form, setForm] = useState({
     userId: "",
-    items: [{ description: "", qty: 1, unitPrice: 0 }],
+    items: [{ description: "", qty: 1, unitPrice: null }],
     tax: 0,
     discount: 0,
     dueDate: "",
@@ -60,16 +61,24 @@ const CreateInvoice = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.userId || form.items.length === 0) {
-      return alert("User and items are required");
-    }
-
     try {
       setLoading(true);
       await axios.post("http://localhost:5000/api/admin/invoices", form);
       navigate("/dashboard/admin/invoices");
-    } catch (err) {
-      alert("Failed to create invoice");
+    } catch (error) {
+      // Backend may return message (string) or errors (array)
+      const data = error?.response?.data;
+
+      if (data?.errors && Array.isArray(data.errors)) {
+        // If multiple errors, show each toast
+        data.errors.forEach((msg) => toast.error(msg));
+      } else if (data?.message) {
+        // Single error message
+        toast.error(data.message);
+      } else {
+        // Fallback generic error
+        toast.error("Something went wrong!");
+      }
     } finally {
       setLoading(false);
     }
@@ -135,7 +144,6 @@ const CreateInvoice = () => {
                       handleItemChange(index, "description", e.target.value)
                     }
                     className="border p-2 rounded "
-                    required
                   />
                 </div>
 
@@ -150,7 +158,6 @@ const CreateInvoice = () => {
                       handleItemChange(index, "qty", Number(e.target.value))
                     }
                     className="border p-2 rounded"
-                    required
                   />
                 </div>
 
@@ -173,7 +180,6 @@ const CreateInvoice = () => {
                       }
                     }}
                     className="border p-2 rounded"
-                    required
                   />
                 </div>
 
@@ -251,7 +257,6 @@ const CreateInvoice = () => {
               value={form.dueDate}
               onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
               className="border p-2 rounded w-full"
-              required
             />
           </div>
 

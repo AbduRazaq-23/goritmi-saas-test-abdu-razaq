@@ -80,8 +80,20 @@ const UpdateInvoice = () => {
       );
       toast.success("updated successfully");
       navigate(`/dashboard/admin/invoices/${id}`);
-    } catch (err) {
-      toast.error(err.response?.data || "Update failed");
+    } catch (error) {
+      // Backend may return message (string) or errors (array)
+      const data = error?.response?.data;
+
+      if (data?.errors && Array.isArray(data.errors)) {
+        // If multiple errors, show each toast
+        data.errors.forEach((msg) => toast.error(msg));
+      } else if (data?.message) {
+        // Single error message
+        toast.error(data.message);
+      } else {
+        // Fallback generic error
+        toast.error("Something went wrong!");
+      }
     } finally {
       setSaving(false);
     }
@@ -114,7 +126,6 @@ const UpdateInvoice = () => {
                     }
                     placeholder="Description"
                     className="border p-2 rounded "
-                    required
                   />
                 </div>
 
@@ -147,7 +158,6 @@ const UpdateInvoice = () => {
                       )
                     }
                     className="border p-2 rounded"
-                    required
                   />
                 </div>
 
