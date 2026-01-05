@@ -114,6 +114,8 @@ const invoiceSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+invoiceSchema.index({ createdAt: 1 });
+
 const Invoice = mongoose.model("Invoice", invoiceSchema);
 
 export default Invoice;

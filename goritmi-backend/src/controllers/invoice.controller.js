@@ -241,19 +241,32 @@ const updateInvoiceStatus = async (req, res) => {
   }
 };
 
-// ===========================================
-//  ADMIN INVOICE LIST CONTROLLER
-// ===========================================
+// =============================================
+//  ADMIN INVOICE LIST CONTROLLER BY FILTRATION
+// =============================================
 
 const getAdminInvoices = async (req, res) => {
   try {
-    const { page = 1, limit = 10, status, search } = req.query;
+    const { page = 1, limit = 10, status, search, month } = req.query;
 
     const query = {};
 
     // 1️ Status filter (DUE / PAID / CANCELLED)
     if (status && ["DUE", "PAID", "CANCELLED"].includes(status)) {
       query.status = status;
+    }
+
+    // Filter by month
+    if (month) {
+      const currentYear = new Date().getFullYear();
+
+      const startDate = new Date(currentYear, month - 1, 1);
+      const endDate = new Date(currentYear, month, 1);
+
+      query.createdAt = {
+        $gte: startDate,
+        $lt: endDate,
+      };
     }
 
     // 2️ Search by invoiceNo or user email
@@ -328,13 +341,16 @@ const getInvoiceSummary = async (req, res) => {
       }
     });
 
+    // grand total of all
+    let grandTotal = totalReceived + totalReceivable + totalCancelled || 0;
+
     return res.status(200).json({
+      grandTotal,
       totalReceivable,
       totalReceived,
       totalCancelled,
     });
   } catch (error) {
-    console.error("Invoice summary error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
