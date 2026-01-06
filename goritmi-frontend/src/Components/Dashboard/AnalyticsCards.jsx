@@ -121,7 +121,7 @@ const AnalyticsCards = () => {
                 <Line
                   type="monotone"
                   dataKey="users"
-                  stroke="#2563eb"
+                  stroke="#1f2937"
                   strokeWidth={3}
                   dot={false}
                 />
@@ -144,7 +144,7 @@ const AnalyticsCards = () => {
                 />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="value" fill="#06b6d4" />
+                <Bar dataKey="value" fill="#1f2937" />
               </BarChart>
             </ResponsiveContainer>
           </div>
