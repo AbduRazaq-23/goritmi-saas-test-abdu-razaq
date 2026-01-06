@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   LineChart,
   Line,
@@ -12,28 +12,17 @@ import {
   Legend,
 } from "recharts";
 import { motion } from "framer-motion";
-import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
 
 const AnalyticsCards = () => {
-  const [overview, setOverview] = useState(null);
-  const { getUsers } = useAuth();
-  const [users, setUsers] = useState();
-
-  // Dummy data fallback
-  const dummyLine = [
-    { name: "Jan", users: 120 },
-    { name: "Feb", users: 210 },
-    { name: "Mar", users: 340 },
-    { name: "Apr", users: 280 },
-    { name: "May", users: 420 },
-    { name: "Jun", users: 520 },
-    // { name: "Jul", users: 520 },
-    // { name: "Aug", users: 520 },
-    // { name: "Sep", users: 520 },
-    // { name: "Oct", users: 520 },
-    // { name: "Nov", users: 520 },
-    // { name: "Dec", users: 520 },
-  ];
+  const [overview, setOverview] = useState({ line: [], bar: [] });
+  const [users, setUsers] = useState({
+    totalUsers: 0,
+    last30DaysUsers: 0,
+    percentage: 0,
+  });
+  const [revenue, setRevenue] = useState({ revenue: 0, percentage: 0 });
+  const [loading, setLoading] = useState(true);
 
   const dummyBar = [
     { name: "Free", value: 240 },
@@ -42,40 +31,50 @@ const AnalyticsCards = () => {
   ];
 
   useEffect(() => {
-    //  dummy data
-    setOverview({
-      line: dummyLine,
-      bar: dummyBar,
-      stats: { users, revenue: 9800, newUsers: users },
-    });
-  }, []);
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const [monthsRes, analyticsRes, revenueRes, getPlan] =
+          await Promise.all([
+            axios.get("http://localhost:5000/api/user/months"),
+            axios.get("http://localhost:5000/api/user/analytics"),
+            axios.get("http://localhost:5000/api/admin/invoices/revenue"),
+            axios.get("http://localhost:5000/api/admin/invoices/plan"),
+          ]);
 
-  // get length of users
-  useEffect(() => {
-    (async () => {
-      const res = await getUsers();
-      console.log(res);
-      setUsers(res?.length);
-    })();
+        setOverview({ line: monthsRes.data, bar: getPlan.data });
+        setUsers(analyticsRes.data);
+        setRevenue(revenueRes.data);
+      } catch (error) {
+        console.error("Failed to load analytics:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
   }, []);
 
   const stats = [
     {
       name: "Total User",
-      val: users,
+      val: users?.totalUsers,
       per: 100,
     },
     {
       name: "Revenue",
-      val: 9800,
-      per: 100,
+      val: revenue?.revenue,
+      per: revenue?.percentage,
     },
     {
       name: "New Users",
-      val: 3,
-      per: 100,
+      val: users?.last30DaysUsers,
+      per: users?.percentageChange,
     },
   ];
+
+  if (loading) {
+    return <div className="text-center py-10">Loading analytics...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -95,10 +94,10 @@ const AnalyticsCards = () => {
               <div className="mt-3 text-2xl font-bold">{s.val}</div>
               <div
                 className={`text-sm text-green-600 ${
-                  s.per < 1 && "text-red-500"
+                  s.per < 0 && "text-red-500"
                 } mt-2 `}
               >
-                {s.per}% (last 30d)
+                {s.per}% {s.name !== "Total User" && "(last 30d)"}
               </div>
             </motion.div>
           );
@@ -111,9 +110,13 @@ const AnalyticsCards = () => {
           <h4 className="text-lg font-semibold mb-4">Users (Last 6 months)</h4>
           <div className="w-full h-64  block">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={overview?.line || dummyLine}>
+              <LineChart data={overview?.line}>
                 <XAxis dataKey="name" />
-                <YAxis />
+                <YAxis
+                  domain={[0, "dataMax"]}
+                  allowDecimals={false}
+                  tickCount={6}
+                />
                 <Tooltip />
                 <Line
                   type="monotone"
@@ -134,7 +137,11 @@ const AnalyticsCards = () => {
               <BarChart data={overview?.bar || dummyBar}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
-                <YAxis />
+                <YAxis
+                  domain={[0, "dataMax"]}
+                  allowDecimals={false}
+                  tickCount={6}
+                />
                 <Tooltip />
                 <Legend />
                 <Bar dataKey="value" fill="#06b6d4" />

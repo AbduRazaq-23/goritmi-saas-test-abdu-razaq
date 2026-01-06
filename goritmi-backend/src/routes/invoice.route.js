@@ -14,6 +14,8 @@ import {
   getAdminInvoices,
   getInvoiceById,
   getInvoiceSummary,
+  getPlan,
+  getRevenue,
   updateInvoice,
   updateInvoiceStatus,
 } from "../controllers/invoice.controller.js";
@@ -64,6 +66,12 @@ invoiceRoute.route("/invoice/:id").get(verifyUser, adminOnly, getInvoiceById);
 invoiceRoute
   .route("/invoices/bulk-delete")
   .delete(verifyUser, adminOnly, bulkDeleteInvoices);
+
+// Get inovice revenue for analytics
+invoiceRoute.route("/invoices/revenue").get(verifyUser, adminOnly, getRevenue);
+
+// Get inovice plan for analytics
+invoiceRoute.route("/invoices/plan").get(verifyUser, adminOnly, getPlan);
 
 // Export Inovice Route
 export default invoiceRoute;

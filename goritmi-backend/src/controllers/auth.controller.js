@@ -310,6 +310,7 @@ const login = async (req, res) => {
         role: user.role,
         contact: user.contact,
         location: user.location,
+        logo: user.logo,
       },
     });
   } catch (error) {

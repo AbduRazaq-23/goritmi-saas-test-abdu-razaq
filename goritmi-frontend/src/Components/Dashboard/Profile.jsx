@@ -18,7 +18,7 @@ const Profile = () => {
   });
 
   // ======= HANDLE LOGO =====
-  const [preview, setPreview] = useState(user?.logo.url);
+  const [preview, setPreview] = useState(user?.logo?.url);
   const [logo, setLogo] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -43,9 +43,9 @@ const Profile = () => {
         "http://localhost:5000/api/user/upload/logo",
         data
       );
-      toast.success(res?.data.message, { autoClose: 1000 });
-      setUser(res.data.user);
-      setPreview(res.data.user.logo.url);
+      toast.success(res?.data?.message, { autoClose: 1000 });
+      setUser(res?.data?.user);
+      setPreview(res?.data?.user?.logo?.url);
       setLogo(null);
     } catch (error) {
       toast.error(error?.response?.data?.message || "failled to upload");

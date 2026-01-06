@@ -14,6 +14,8 @@ import {
   deleteUser,
   toggleStatusUser,
   uploadLogo,
+  getUserAnalytics,
+  getLast6MonthsUsers,
 } from "../controllers/user.controller.js";
 
 // ===============================
@@ -46,5 +48,9 @@ userRoute.route("/get-profile").get(verifyUser, getProfile);
 userRoute
   .route("/upload/logo")
   .patch(verifyUser, upload.single("logo"), uploadLogo);
+// GET USERS ANALYTICS
+userRoute.route("/analytics").get(verifyUser, adminOnly, getUserAnalytics);
+// GET USERS ANALYTICS
+userRoute.route("/months").get(verifyUser, adminOnly, getLast6MonthsUsers);
 
 export default userRoute;

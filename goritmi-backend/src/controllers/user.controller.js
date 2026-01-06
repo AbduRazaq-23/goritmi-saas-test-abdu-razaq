@@ -184,6 +184,135 @@ const uploadLogo = async (req, res) => {
     });
   }
 };
+//============================================
+// GET USERS ANALYTICS
+//============================================
+const getUserAnalytics = async (req, res) => {
+  try {
+    const now = new Date();
+
+    const last30Start = new Date();
+    last30Start.setDate(now.getDate() - 30);
+
+    const prev30Start = new Date();
+    prev30Start.setDate(now.getDate() - 60);
+
+    const [stats] = await User.aggregate([
+      {
+        $facet: {
+          totalUsers: [{ $count: "count" }],
+          last30: [
+            {
+              $match: {
+                createdAt: { $gte: last30Start },
+              },
+            },
+            { $count: "count" },
+          ],
+          previous30: [
+            {
+              $match: {
+                createdAt: {
+                  $gte: prev30Start,
+                  $lt: last30Start,
+                },
+              },
+            },
+            { $count: "count" },
+          ],
+        },
+      },
+    ]);
+
+    const totalUsers = stats.totalUsers[0]?.count || 0;
+    const last30DaysUsers = stats.last30[0]?.count || 0;
+    const previous30DaysUsers = stats.previous30[0]?.count || 0;
+
+    let percentageChange = 0;
+    if (previous30DaysUsers === 0 && last30DaysUsers > 0) {
+      percentageChange = 100;
+    } else if (previous30DaysUsers > 0) {
+      percentageChange =
+        ((last30DaysUsers - previous30DaysUsers) / previous30DaysUsers) * 100;
+    }
+
+    return res.status(200).json({
+      totalUsers,
+      last30DaysUsers,
+      previous30DaysUsers,
+      percentageChange: Math.round(percentageChange),
+    });
+  } catch (error) {
+    console.error("User analytics error:", error);
+    res.status(500).json({ message: "Failed to fetch user analytics" });
+  }
+};
+//============================================
+// GET USERS ANALYTICS
+//============================================
+const getLast6MonthsUsers = async (req, res) => {
+  try {
+    const now = new Date();
+    const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+    sixMonthsAgo.setHours(0, 0, 0, 0);
+
+    const users = await User.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: sixMonthsAgo },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { "_id.year": 1, "_id.month": 1 },
+      },
+    ]);
+
+    // Generate last 6 months labels (current + previous 5)
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const result = [];
+    for (let i = 0; i < 6; i++) {
+      const date = new Date(now.getFullYear(), now.getMonth() - 5 + i, 1);
+
+      const entry = users.find(
+        (u) =>
+          u._id.year === date.getFullYear() &&
+          u._id.month === date.getMonth() + 1
+      );
+
+      result.push({
+        name: monthNames[date.getMonth()],
+        users: entry ? entry.count : 0,
+      });
+    }
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("Last 6 months users error:", error);
+    return res.status(500).json({ message: "Failed to fetch user analytics" });
+  }
+};
 
 export {
   getProfile,
@@ -192,4 +321,6 @@ export {
   deleteUser,
   toggleStatusUser,
   uploadLogo,
+  getUserAnalytics,
+  getLast6MonthsUsers,
 };

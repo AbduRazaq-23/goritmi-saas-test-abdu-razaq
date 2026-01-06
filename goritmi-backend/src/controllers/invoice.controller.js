@@ -396,6 +396,148 @@ const bulkDeleteInvoices = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+// ===========================================
+//  GET INOVICE REVENUE FOR ANALYTICS
+// ===========================================
+const getRevenue = async (req, res) => {
+  try {
+    const now = new Date();
+    const last30Start = new Date(now);
+    last30Start.setDate(now.getDate() - 30);
+
+    const prev30Start = new Date(now);
+    prev30Start.setDate(now.getDate() - 60);
+    const prev30End = new Date(last30Start);
+
+    // Current 30 days revenue
+    const currentRevenue = await Invoice.aggregate([
+      {
+        $match: {
+          status: "PAID", // adjust if needed
+          createdAt: { $gte: last30Start },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$totalAmount" },
+        },
+      },
+    ]);
+
+    // Previous 30 days revenue
+    const previousRevenue = await Invoice.aggregate([
+      {
+        $match: {
+          status: "PAID",
+          createdAt: { $gte: prev30Start, $lt: prev30End },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$totalAmount" },
+        },
+      },
+    ]);
+
+    const currentTotal = currentRevenue[0]?.total || 0;
+    const previousTotal = previousRevenue[0]?.total || 0;
+
+    const percentageChange =
+      previousTotal === 0
+        ? currentTotal > 0
+          ? 100
+          : 0
+        : ((currentTotal - previousTotal) / previousTotal) * 100;
+
+    res.status(200).json({
+      revenue: Math.round(currentTotal), // e.g., 9800
+      percentage: Math.round(percentageChange), // e.g., 100
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch revenue" });
+  }
+};
+// ===========================================
+//  GET INOVICE PLAN
+// ===========================================
+// GET /api/admin/plans-distribution
+const getPlan = async (req, res) => {
+  try {
+    // Aggregate users and count their invoices to determine plan
+    const plans = await User.aggregate([
+      {
+        $lookup: {
+          from: "invoices", // name of the Invoice collection (lowercase + s usually)
+          localField: "_id",
+          foreignField: "userId",
+          as: "invoices",
+        },
+      },
+      {
+        $addFields: {
+          invoiceCount: { $size: "$invoices" },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          free: {
+            $sum: {
+              $cond: [{ $eq: ["$invoiceCount", 0] }, 1, 0],
+            },
+          },
+          pro: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    { $gte: ["$invoiceCount", 1] },
+                    { $lte: ["$invoiceCount", 4] },
+                  ],
+                },
+                1,
+                0,
+              ],
+            },
+          },
+          enterprise: {
+            $sum: {
+              $cond: [{ $gte: ["$invoiceCount", 5] }, 1, 0],
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          distribution: [
+            { name: "Free", value: "$free" },
+            { name: "Pro", value: "$pro" },
+            { name: "Enterprise", value: "$enterprise" },
+          ],
+        },
+      },
+    ]);
+
+    const result =
+      plans.length > 0
+        ? plans[0].distribution
+        : [
+            { name: "Free", value: 0 },
+            { name: "Pro", value: 0 },
+            { name: "Enterprise", value: 0 },
+          ];
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("Plans distribution error:", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch plans distribution" });
+  }
+};
 
 export {
   createInvoice,
@@ -405,4 +547,6 @@ export {
   getInvoiceSummary,
   getInvoiceById,
   bulkDeleteInvoices,
+  getRevenue,
+  getPlan,
 };
