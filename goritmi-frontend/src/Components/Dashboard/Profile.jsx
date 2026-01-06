@@ -84,10 +84,10 @@ const Profile = () => {
   const isAdmin = user.role === "admin";
 
   return (
-    <div className=" max-w-3xl mx-auto bg-white p-2 rounded-2xl shadow-2xl">
+    <div className=" max-w-3xl mx-auto bg-white p-2 rounded-2xl shadow-2xl border-3 border-gray-400">
       {/* Logo  */}
       <div className="w-full flex justify-around mb-5">
-        <div className="relative w-24 h-24 group flex flex-col">
+        <div className="relative w-24 h-24 group  flex flex-col border-3 border-gray-400 rounded-full">
           <img
             className="h-24 w-24 rounded-full object-cover"
             src={preview}

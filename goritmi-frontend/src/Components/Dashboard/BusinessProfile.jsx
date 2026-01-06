@@ -106,9 +106,9 @@ const BusinessProfile = () => {
         {/* ================= LOGO CARD ================= */}
         <motion.div
           whileHover={{ scale: 1.02 }}
-          className="bg-white text-gray-900 shadow-2xl rounded-xl p-5 flex flex-col items-center"
+          className="bg-white text-gray-900 border-3 border-gray-400 shadow-2xl rounded-xl p-5 flex flex-col items-center"
         >
-          <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border border-gray-400 overflow-hidden bg-gray-50 mb-4">
+          <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-3 border-gray-400 overflow-hidden bg-gray-50 mb-4">
             {preview ? (
               <img
                 src={preview}
@@ -155,7 +155,7 @@ const BusinessProfile = () => {
         {/* ================= FORM ================= */}
         <motion.form
           onSubmit={handleSubmit}
-          className="md:col-span-2 bg-white text-gray-800  shadow-2xl rounded-xl p-5 sm:p-6 space-y-4"
+          className="md:col-span-2 bg-white text-gray-800 border-3 border-gray-400  shadow-2xl rounded-xl p-5 sm:p-6 space-y-4"
         >
           {!editForm ? (
             <>
